@@ -115,3 +115,11 @@ export function canAccessResource(
   }
   return hasRole(userRole, requiredRole)
 }
+
+export function requirePermission(auth: { role: string }, permission: string): void {
+  if (!hasPermission(auth.role as UserRole, permission)) {
+    const err: any = new Error('Insufficient permissions');
+    err.status = 403;
+    throw err;
+  }
+}

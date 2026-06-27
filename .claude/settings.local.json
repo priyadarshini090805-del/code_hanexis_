@@ -23,7 +23,10 @@
       "PowerShell(Stop-Process -Id \\(Get-Process -Name \"gh\" -ErrorAction SilentlyContinue\\).Id -Force -ErrorAction SilentlyContinue)",
       "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); gh auth login -p https -h github.com -w 2>&1)",
       "Bash(cd \"C:/Users/Priya/Downloads/ai-lead-gen-project-main \\(4\\)/ai-lead-gen-project-main\" && grep \"CREATE TABLE\" prisma/migrations/20260612165809_init/migration.sql | sort > /tmp/tables2.txt && grep \"CREATE TABLE\" prisma/migrations/0_init/migration.sql | sort > /tmp/tables1.txt && diff /tmp/tables1.txt /tmp/tables2.txt)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(rm lib/middleware/auth.ts lib/middleware/rbac.ts lib/middleware/rate-limit.ts lib/middleware/request-logger.ts lib/services/workflow-executor.service.ts lib/auth/authorize.ts)",
+      "Bash(rmdir lib/middleware)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

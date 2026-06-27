@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
-import { requirePermission } from '@/lib/auth/authorize';
+import { requirePermission } from '@/lib/rbac';
 import { successResponse, errorResponse } from '@/lib/response';
 import { CampaignService } from '@/lib/services/campaign.service';
 
