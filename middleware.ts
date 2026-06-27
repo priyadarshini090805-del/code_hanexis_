@@ -8,7 +8,10 @@ import crypto from 'crypto';
 const CSRF_EXEMPT_PREFIXES = [
   '/api/webhooks/',
   '/api/cron/',
-  '/api/auth/[...nextauth]',
+  '/api/auth/callback/',
+  '/api/auth/signout',
+  '/api/auth/session',
+  '/api/auth/csrf',
   '/api/auth/2fa/login-verify',
   '/api/auth/refresh',
   '/api/auth/logout',
