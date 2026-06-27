@@ -4,7 +4,7 @@ import LinkedIn from 'next-auth/providers/linkedin'
 import Credentials from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import { verifyPassword } from '@/lib/auth/crypto'
-import { resolveRole } from '@/lib/auth/roles'
+import { resolveRole } from '@/lib/rbac'
 
 // NOTE: PrismaAdapter is intentionally NOT used here.
 // JWT sessions + manual OAuth account creation in signIn callback.

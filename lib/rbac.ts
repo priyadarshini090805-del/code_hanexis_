@@ -1,10 +1,5 @@
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
-  SALES = 'SALES',
-  USER = 'USER',
-}
+import { UserRole } from '@/lib/enums'
+export { UserRole }
 
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
   [UserRole.SUPER_ADMIN]: 5,
@@ -122,4 +117,13 @@ export function requirePermission(auth: { role: string }, permission: string): v
     err.status = 403;
     throw err;
   }
+}
+
+export function resolveRole(email: string | null | undefined): UserRole {
+  if (!email) return 'USER';
+  const admins = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return admins.includes(email.toLowerCase()) ? 'ADMIN' : 'USER';
 }

@@ -98,3 +98,13 @@ export const IntegrationStatus = asEnum({
   ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE', EXPIRED: 'EXPIRED',
 });
 export type IntegrationStatus = (typeof IntegrationStatus)[keyof typeof IntegrationStatus];
+
+export const JobType = asEnum({
+  OUTREACH: 'OUTREACH', FOLLOWUP: 'FOLLOWUP', CONTENT: 'CONTENT', NOTIFICATION: 'NOTIFICATION',
+});
+export type JobType = (typeof JobType)[keyof typeof JobType];
+
+export const JobStatus = asEnum({
+  PENDING: 'PENDING', PROCESSING: 'PROCESSING', COMPLETED: 'COMPLETED', FAILED: 'FAILED',
+});
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus];

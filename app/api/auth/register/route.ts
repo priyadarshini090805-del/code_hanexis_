@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hashPassword } from '@/lib/auth/crypto'
-import { resolveRole } from '@/lib/auth/roles'
+import { resolveRole } from '@/lib/rbac'
 import { registerSchema } from '@/lib/validations/auth'
 import { validationErrorResponse, successResponse, conflictResponse, internalErrorResponse, tooManyRequestsResponse } from '@/lib/api-response'
 import { csrfMiddleware } from '@/lib/security/csrf'
