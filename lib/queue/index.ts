@@ -14,6 +14,7 @@ export interface OutreachJobData {
   leadId: string;
   workflowId?: string;
   message?: string;
+  [key: string]: string | undefined;
 }
 
 export interface ContentJobData {
@@ -27,6 +28,7 @@ export interface ContentJobData {
 export interface FollowupJobData {
   campaignLeadId: string;
   message: string;
+  [key: string]: string;
 }
 
 export interface NotificationJobData {

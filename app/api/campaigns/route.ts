@@ -3,6 +3,7 @@ import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
 import { CampaignManagementService } from '@/lib/services/campaign-management.service';
+import type { CampaignStatus } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const campaigns = await prisma.campaign.findMany({
       where: {
         userId: payload.id,
-        ...(status && { status }),
+        ...(status && { status: status as CampaignStatus }),
       },
       include: { leads: true, workflow: true },
       orderBy: { createdAt: 'desc' },

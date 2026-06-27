@@ -5,6 +5,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import { verifyPassword } from '@/lib/auth/crypto'
 import { resolveRole } from '@/lib/rbac'
+import type { UserRole as PrismaUserRole } from '@prisma/client'
 
 // NOTE: PrismaAdapter is intentionally NOT used here.
 // JWT sessions + manual OAuth account creation in signIn callback.
@@ -71,7 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 lastName: nameParts.slice(1).join(' ') || '',
                 image: user.image,
                 emailVerified: new Date(),
-                role: resolveRole(user.email),
+                role: resolveRole(user.email) as PrismaUserRole,
               },
             })
           } catch (createErr: any) {

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { AIMessageType, MessageTone, MessageLength } from '@/lib/enums';
+import type { AIMessageType as PrismaAIMessageType, MessageTone as PrismaMessageTone, MessageLength as PrismaMessageLength } from '@prisma/client';
 import { OpenRouterProvider } from './providers/openrouter';
 import { GenerateMessageInput } from './providers/interface';
 
@@ -73,9 +74,9 @@ export class AIService {
       data: {
         userId,
         leadId,
-        messageType,
-        tone,
-        length,
+        messageType: messageType as PrismaAIMessageType,
+        tone: tone as PrismaMessageTone,
+        length: length as PrismaMessageLength,
         prompt: JSON.stringify(input).slice(0, 8000),
         response: result.message,
         tokensUsed: result.tokensUsed,

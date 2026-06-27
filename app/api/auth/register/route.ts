@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { hashPassword } from '@/lib/auth/crypto'
 import { resolveRole } from '@/lib/rbac'
+import type { UserRole as PrismaUserRole } from '@prisma/client'
 import { registerSchema } from '@/lib/validations/auth'
 import { validationErrorResponse, successResponse, conflictResponse, internalErrorResponse, tooManyRequestsResponse } from '@/lib/api-response'
 import { csrfMiddleware } from '@/lib/security/csrf'
@@ -54,7 +55,7 @@ async function handler(request: NextRequest) {
         lastName: validatedData.lastName,
         email: validatedData.email,
         passwordHash,
-        role: resolveRole(validatedData.email),
+        role: resolveRole(validatedData.email) as PrismaUserRole,
       },
       select: {
         id: true,

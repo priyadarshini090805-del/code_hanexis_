@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import type { ContentType } from '@prisma/client';
 
 export class ContentManagementService {
   static async getContentById(userId: string, contentId: string) {
@@ -122,7 +123,7 @@ export class ContentManagementService {
 
   static async getContentByType(userId: string, type: string) {
     return await prisma.content.findMany({
-      where: { userId, type },
+      where: { userId, type: type as ContentType },
       include: { versions: true },
       orderBy: { createdAt: 'desc' },
     });
