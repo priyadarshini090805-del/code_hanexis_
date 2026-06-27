@@ -44,8 +44,8 @@ export class ContentManagementService {
   }
 
   static async deleteContent(userId: string, contentId: string) {
-    const content = await this.getContentById(userId, contentId);
-    
+    await this.getContentById(userId, contentId);
+
     await prisma.contentVersion.deleteMany({ where: { contentId } });
     await prisma.content.delete({ where: { id: contentId } });
 
@@ -53,7 +53,7 @@ export class ContentManagementService {
   }
 
   static async approveContent(userId: string, contentId: string, approvedBy: string) {
-    const content = await this.getContentById(userId, contentId);
+    await this.getContentById(userId, contentId);
 
     return await prisma.content.update({
       where: { id: contentId },
@@ -78,7 +78,7 @@ export class ContentManagementService {
     });
   }
 
-  static async rejectContent(userId: string, contentId: string, reason: string, rejectedBy: string) {
+  static async rejectContent(_userId: string, contentId: string, reason: string, rejectedBy: string) {
     return await prisma.content.update({
       where: { id: contentId },
       data: {

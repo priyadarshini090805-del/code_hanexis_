@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface WorkflowStep {
@@ -19,7 +19,6 @@ interface Workflow {
 }
 
 function WorkflowBuilderPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const workflowId = searchParams.get('id');
 
@@ -142,7 +141,7 @@ function WorkflowBuilderPage() {
                 {workflow.steps.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">No steps added yet</p>
                 ) : (
-                  workflow.steps.map((step, idx) => (
+                  workflow.steps.map((step) => (
                     <div key={step.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">

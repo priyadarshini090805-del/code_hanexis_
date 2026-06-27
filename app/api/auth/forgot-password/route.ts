@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { forgotPasswordSchema } from '@/lib/validations/auth'
-import { validationErrorResponse, successResponse, notFoundResponse, internalErrorResponse, tooManyRequestsResponse } from '@/lib/api-response'
+import { validationErrorResponse, successResponse, internalErrorResponse, tooManyRequestsResponse } from '@/lib/api-response'
 import { generatePasswordResetToken } from '@/lib/auth/crypto'
 import { createAuditLog, AuditAction } from '@/lib/security/audit'
 import { enforceRequestRateLimit } from '@/lib/security/rate-limit'

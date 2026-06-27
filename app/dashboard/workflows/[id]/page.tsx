@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface WorkflowStep {
@@ -24,7 +24,6 @@ interface Workflow {
 }
 
 export default function WorkflowDetailPage() {
-  const router = useRouter();
   const params = useParams();
   const id = params.id as string;
 

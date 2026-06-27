@@ -1,12 +1,9 @@
-import { AIService } from './service'
 import { getPrompt, messageTypes, tones, lengths } from './prompts'
-import { AIMessageType, MessageTone, MessageLength } from '@/lib/enums'
+import { AIMessageType, MessageTone } from '@/lib/enums'
 
 describe('AIService', () => {
-  let aiService: AIService
-
   beforeEach(() => {
-    aiService = new AIService()
+    // AIService instance available if needed by future tests
   })
 
   describe('Prompt Generation', () => {
@@ -34,17 +31,6 @@ describe('AIService', () => {
 
   describe('Token Estimation', () => {
     it('should estimate tokens based on input length', () => {
-      const input = {
-        leadName: 'John Doe',
-        company: 'Acme Corp',
-        role: 'VP Sales',
-        productName: 'HaneXes',
-        valueProposition: 'Increase sales by 40%',
-        messageType: 'SALES_PITCH' as AIMessageType,
-        tone: 'PROFESSIONAL' as MessageTone,
-        length: 'MEDIUM' as MessageLength,
-      }
-
       const shortTokens = 0 // Would call estimateTokens
       expect(shortTokens).toBeGreaterThanOrEqual(0)
     })

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { LinkedInService } from '@/lib/services/linkedin.service';
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { content, action, recipientId, subject } = publishSchema.parse(body);
+    const { content, action, recipientId } = publishSchema.parse(body);
 
     const token = request.headers.get('x-linkedin-token');
     if (!token) {

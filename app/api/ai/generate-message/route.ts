@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { verifyToken } from '@/lib/auth/crypto'
 import { verifyAuth } from '@/lib/auth/verify'
 import { aiService } from '@/lib/ai/service'
 import { prisma } from '@/lib/prisma'
@@ -21,10 +20,6 @@ const generateMessageSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify token
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid token')
@@ -123,10 +118,6 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify token
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid token')

@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth/crypto'
 import { verifyAuth } from '@/lib/auth/verify'
 import { successResponse, unauthorizedResponse, internalErrorResponse, validationErrorResponse } from '@/lib/api-response'
 import { ZodError } from 'zod'
@@ -13,10 +12,6 @@ const createTagSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Get token from header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid token')
@@ -36,10 +31,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get token from header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid token')

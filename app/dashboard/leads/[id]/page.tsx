@@ -83,7 +83,6 @@ export default function LeadDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [newTag, setNewTag] = useState('');
-  const [activeTab, setActiveTab] = useState<'timeline' | 'info' | 'ai'>('timeline');
 
   useEffect(() => { if (id) fetchLead(); }, [id]);
 
@@ -278,7 +277,7 @@ export default function LeadDetailPage() {
                       {activities
                         .slice()
                         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                        .map((activity, i) => {
+                        .map((activity) => {
                           const cfg = getActivityConfig(activity.activityType);
                           return (
                             <div key={activity.id} className="relative flex gap-4 pl-1">

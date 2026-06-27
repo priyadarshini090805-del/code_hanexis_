@@ -1,13 +1,10 @@
 import { NextRequest } from 'next/server'
-import { verifyToken, getTokenFromRequest } from '@/lib/auth/crypto'
 import { verifyAuth } from '@/lib/auth/verify'
 import { unauthorizedResponse, successResponse, internalErrorResponse } from '@/lib/api-response'
 import { getSessionMetrics, deleteSession, revokeAllDeviceSessions } from '@/lib/session'
 
 export async function GET(request: NextRequest) {
   try {
-    const token = getTokenFromRequest(request)
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid or expired token')
@@ -24,8 +21,6 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const token = getTokenFromRequest(request)
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid or expired token')

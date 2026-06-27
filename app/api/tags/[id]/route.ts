@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth/crypto'
 import { verifyAuth } from '@/lib/auth/verify'
 import { successResponse, unauthorizedResponse, internalErrorResponse, notFoundResponse, validationErrorResponse } from '@/lib/api-response'
 import { ZodError } from 'zod'
@@ -16,10 +15,6 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get token from header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid token')
@@ -66,10 +61,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get token from header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
     const decoded = await verifyAuth(request).catch(() => null)
     if (!decoded) {
       return unauthorizedResponse('Invalid token')

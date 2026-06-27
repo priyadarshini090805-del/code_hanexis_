@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { NotificationService } from '@/lib/services/notification.service';
 import { successResponse, errorResponse } from '@/lib/response';

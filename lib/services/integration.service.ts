@@ -153,7 +153,7 @@ export class IntegrationService {
     return token;
   }
 
-  static async publishToLinkedIn(integrationId: string, content: string) {
+  static async publishToLinkedIn(integrationId: string, _content: string) {
     const integration = await prisma.integration.findUnique({
       where: { id: integrationId },
       include: {
@@ -171,7 +171,7 @@ export class IntegrationService {
     return { success: true, postId: `linkedin_${Date.now()}` };
   }
 
-  static async publishToInstagram(integrationId: string, imageUrl: string, caption: string) {
+  static async publishToInstagram(integrationId: string, _imageUrl: string, _caption: string) {
     const integration = await prisma.integration.findUnique({
       where: { id: integrationId },
       include: {

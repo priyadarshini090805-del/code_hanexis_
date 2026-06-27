@@ -5,7 +5,7 @@ import { ContentGenerationPipelineService } from '@/lib/services/content-generat
 
 export async function POST(request: NextRequest) {
   try {
-    const payload = await verifyAuth(request);
+    await verifyAuth(request);
     const body = await request.json();
     const { type, topic, tone } = body;
 

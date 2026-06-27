@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const payload = await verifyAuth(request);
+    await verifyAuth(request);
     const { id } = await params;
 
     const stats = await CampaignManagementService.getCampaignStats(id);

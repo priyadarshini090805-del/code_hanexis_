@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 
 interface DailyMetric {
   date: string;
@@ -28,7 +27,7 @@ function LineChart({
   data,
   keys,
   colors,
-  labels,
+  labels: _labels,
   height = 200,
 }: {
   data: DailyMetric[];

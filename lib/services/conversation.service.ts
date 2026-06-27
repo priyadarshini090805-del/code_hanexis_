@@ -156,7 +156,7 @@ export class ConversationService {
     });
   }
 
-  static async markAsRead(userId: string, conversationId: string) {
+  static async markAsRead(_userId: string, conversationId: string) {
     return await prisma.conversation.update({
       where: { id: conversationId },
       data: { unreadCount: 0 },

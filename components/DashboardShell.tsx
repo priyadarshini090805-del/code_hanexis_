@@ -1,11 +1,11 @@
 'use client'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Users, Megaphone, Workflow, PenLine, CalendarClock,
-  MessagesSquare, Link2, BarChart3, ShieldCheck, Settings, LogOut, Menu, X, CheckSquare, BrainCircuit,
+  MessagesSquare, Link2, BarChart3, ShieldCheck, Settings, LogOut, Menu, CheckSquare, BrainCircuit,
 } from 'lucide-react'
 import NotificationBell from '@/components/NotificationBell'
 
@@ -32,7 +32,6 @@ function rank(role: string) { return ({ USER: 0, SALES: 1, MANAGER: 2, ADMIN: 3,
 
 export default function DashboardShell({ user, children }: { user: User; children: React.ReactNode }) {
   const pathname = usePathname()
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const isActive = (href: string) => pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/')) || (href === '/dashboard' && pathname === '/dashboard')
   const initials = `${(user.firstName || user.email)[0] || 'U'}`.toUpperCase()

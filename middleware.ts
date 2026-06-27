@@ -8,7 +8,7 @@ import type { NextRequest } from 'next/server';
 // see /api/auth/register and /api/ai/generate-message. Login is guarded by
 // brute-force protection (lib/security/brute-force.ts).
 
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   const response = NextResponse.next();
 
   // Security Headers

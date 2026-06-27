@@ -3,7 +3,6 @@ import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
 import { WorkflowRuntimeService } from '@/lib/services/workflow-runtime.service';
-import { queue } from '@/lib/queue';
 
 export async function POST(request: NextRequest) {
   try {

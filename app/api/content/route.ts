@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
-import { ContentGenerationPipelineService } from '@/lib/services/content-generation-pipeline.service';
 
 export async function POST(request: NextRequest) {
   try {

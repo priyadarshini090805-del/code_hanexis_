@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -15,7 +15,7 @@ export default function ContentEditorPage() {
   const [aiLoading, setAiLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [, setSuggestions] = useState<string[]>([]);
 
   const contentTypes = [
     { value: 'LINKEDIN_POST', label: 'LinkedIn Post' },

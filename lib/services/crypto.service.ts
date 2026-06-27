@@ -2,7 +2,6 @@ import crypto from 'crypto';
 
 export class CryptoService {
   private static encryptionKey: Buffer | null = null;
-  private static iv: Buffer | null = null;
 
   private static getEncryptionKey(): Buffer {
     if (!this.encryptionKey) {
