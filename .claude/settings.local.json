@@ -11,7 +11,19 @@
       "Bash(curl -s -X POST http://localhost:3099/api/auth/register -H 'Content-Type: application/json' -d '{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"phase1test@example.com\",\"password\":\"TestPass123!\"}')",
       "Bash(curl -s http://localhost:3099/api/leads -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcXZ2ZmQxcDAwMDFoeGh6czY5dzEwZ2QiLCJlbWFpbCI6InBoYXNlMXRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3ODI1MzUyMTAsImV4cCI6MTc4MjUzNjExMH0.OnXq2OFttst2EVSdpgFyX7bTFA5TRGm2d3drSM9UxtQ')",
       "Bash(node -e *)",
-      "Bash(curl -s -X POST http://localhost:3099/api/auth/2fa/verify -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcXZ2ZmQxcDAwMDFoeGh6czY5dzEwZ2QiLCJlbWFpbCI6InBoYXNlMXRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3ODI1MzUyMTAsImV4cCI6MTc4MjUzNjExMH0.OnXq2OFttst2EVSdpgFyX7bTFA5TRGm2d3drSM9UxtQ' -H 'Content-Type: application/json' -d '{\"token\":\"__CMDSUB_OUTPUT__\",\"mode\":\"setup\"}')"
+      "Bash(curl -s -X POST http://localhost:3099/api/auth/2fa/verify -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcXZ2ZmQxcDAwMDFoeGh6czY5dzEwZ2QiLCJlbWFpbCI6InBoYXNlMXRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3ODI1MzUyMTAsImV4cCI6MTc4MjUzNjExMH0.OnXq2OFttst2EVSdpgFyX7bTFA5TRGm2d3drSM9UxtQ' -H 'Content-Type: application/json' -d '{\"token\":\"__CMDSUB_OUTPUT__\",\"mode\":\"setup\"}')",
+      "Bash(npm test *)",
+      "Bash(git checkout *)",
+      "Bash(git push *)",
+      "Bash(gh pr create --base main --title 'fix: Phase 1 security hardening + Phase 2 scheduler/cron fixes' --body ' *)",
+      "PowerShell(gh --version)",
+      "PowerShell(winget install --id GitHub.cli --accept-source-agreements --accept-package-agreements 2>&1)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); gh auth status 2>&1)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); gh auth login --with-token 2>&1)",
+      "PowerShell(Stop-Process -Id \\(Get-Process -Name \"gh\" -ErrorAction SilentlyContinue\\).Id -Force -ErrorAction SilentlyContinue)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); gh auth login -p https -h github.com -w 2>&1)",
+      "Bash(cd \"C:/Users/Priya/Downloads/ai-lead-gen-project-main \\(4\\)/ai-lead-gen-project-main\" && grep \"CREATE TABLE\" prisma/migrations/20260612165809_init/migration.sql | sort > /tmp/tables2.txt && grep \"CREATE TABLE\" prisma/migrations/0_init/migration.sql | sort > /tmp/tables1.txt && diff /tmp/tables1.txt /tmp/tables2.txt)",
+      "Bash(git rm *)"
     ]
   }
 }

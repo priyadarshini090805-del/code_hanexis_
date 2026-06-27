@@ -3,15 +3,16 @@ import { prisma } from '@/lib/prisma';
 import { LinkedInService } from '@/lib/services/linkedin.service';
 import { InstagramService } from '@/lib/services/instagram.service';
 import { NotificationService } from '@/lib/services/notification.service';
-import { processOutreachQueue } from '@/lib/jobs/outreach-worker';
 import { WorkflowRuntimeService } from '@/lib/services/workflow-runtime.service';
 
-export const maxDuration = 300;
+export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
 /**
  * Vercel Cron: publishes due scheduled content to LinkedIn / Instagram.
- * Runs every minute (see vercel.json). Retries up to 3 times.
+ * Runs every 5 minutes (see vercel.json). Retries up to 3 times.
+ * Also advances durable workflow executions on each tick.
+ * Outreach is handled by its own cron at /api/cron/process-outreach.
  */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
@@ -95,14 +96,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Advance durable workflow executions, then drain the outreach/follow-up
-  // queue — all on the same cron tick to stay within the Hobby cron-job limit.
+  // Advance durable workflow executions on the same tick.
   const workflow = await WorkflowRuntimeService.tick().catch((e) => {
     console.error('Workflow engine error:', e);
-    return [];
-  });
-  const outreach = await processOutreachQueue().catch((e) => {
-    console.error('Outreach worker error:', e);
     return [];
   });
 
@@ -110,7 +106,6 @@ export async function GET(request: NextRequest) {
     processed: results.length,
     results,
     workflow: { processed: workflow.length, results: workflow },
-    outreach: { processed: outreach.length, results: outreach },
     at: now.toISOString(),
   });
 }

@@ -7,30 +7,79 @@ const MAX_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 5 * 60 * 1000;
 
 /**
- * Consume outreach & follow-up jobs from PublishingQueue, deliver the message
+ * Consume outreach & follow-up jobs from JobQueue, deliver the message
  * (email when configured), record the conversation thread, and update
  * CampaignLead status + campaign analytics counters.
  *
- * This closes the core loop: Campaign launch -> outreach send -> follow-up
- * -> analytics. LinkedIn/Instagram DM delivery is not available via their
- * public APIs, so email is the delivery channel.
+ * Legacy migration: also drains any remaining outreach/followup jobs from
+ * PublishingQueue (the old storage). Once drained, only JobQueue is read.
  */
 export async function processOutreachQueue(limit = 25): Promise<any[]> {
+  const results: any[] = [];
+
+  // --- Primary: process from JobQueue ---
   const now = new Date();
-  const jobs = await prisma.publishingQueue.findMany({
+  const jobs = await prisma.jobQueue.findMany({
     where: {
-      platform: { in: ['outreach', 'followup'] },
-      status: 'pending',
+      jobType: { in: ['OUTREACH', 'FOLLOWUP'] },
+      status: 'PENDING',
       OR: [{ nextRetryAt: null }, { nextRetryAt: { lte: now } }],
     },
     take: limit,
     orderBy: { createdAt: 'asc' },
   });
 
-  const results: any[] = [];
-
   for (const job of jobs) {
-    // Atomically claim the job so concurrent runs don't double-send.
+    const claimed = await prisma.jobQueue.updateMany({
+      where: { id: job.id, status: 'PENDING' },
+      data: { status: 'PROCESSING', processingStartedAt: now, lastAttemptAt: now },
+    });
+    if (claimed.count === 0) continue;
+
+    try {
+      const data = job.payload as Record<string, any>;
+      if (job.jobType === 'OUTREACH') {
+        await processOutreach(data as any);
+      } else {
+        await processFollowup(data as any);
+      }
+      await prisma.jobQueue.update({
+        where: { id: job.id },
+        data: { status: 'COMPLETED', completedAt: new Date() },
+      });
+      results.push({ id: job.id, jobType: job.jobType, status: 'sent' });
+    } catch (e: any) {
+      const attempts = job.attemptCount + 1;
+      const willRetry = attempts < job.maxAttempts;
+      await prisma.jobQueue.update({
+        where: { id: job.id },
+        data: {
+          status: willRetry ? 'PENDING' : 'FAILED',
+          attemptCount: attempts,
+          nextRetryAt: willRetry ? new Date(Date.now() + RETRY_DELAY_MS) : null,
+          errorMessage: e.message?.slice(0, 900),
+          ...(!willRetry ? { completedAt: new Date() } : {}),
+        },
+      });
+      if (!willRetry) {
+        await markCampaignLeadFailed(job.jobType, job.payload, e.message).catch(() => null);
+      }
+      results.push({ id: job.id, jobType: job.jobType, status: willRetry ? 'retry' : 'failed', error: e.message });
+    }
+  }
+
+  // --- Legacy drain: process remaining outreach/followup from PublishingQueue ---
+  const legacyJobs = await prisma.publishingQueue.findMany({
+    where: {
+      platform: { in: ['outreach', 'followup'] },
+      status: 'pending',
+      OR: [{ nextRetryAt: null }, { nextRetryAt: { lte: now } }],
+    },
+    take: Math.max(1, limit - results.length),
+    orderBy: { createdAt: 'asc' },
+  });
+
+  for (const job of legacyJobs) {
     const claimed = await prisma.publishingQueue.updateMany({
       where: { id: job.id, status: 'pending' },
       data: { status: 'processing', lastAttemptAt: now },
@@ -48,7 +97,7 @@ export async function processOutreachQueue(limit = 25): Promise<any[]> {
         where: { id: job.id },
         data: { status: 'published' },
       });
-      results.push({ id: job.id, platform: job.platform, status: 'sent' });
+      results.push({ id: job.id, platform: job.platform, status: 'sent', source: 'legacy' });
     } catch (e: any) {
       const attempts = job.attemptCount + 1;
       const willRetry = attempts < MAX_ATTEMPTS;
@@ -61,9 +110,9 @@ export async function processOutreachQueue(limit = 25): Promise<any[]> {
         },
       });
       if (!willRetry) {
-        await markCampaignLeadFailed(job.platform, job.errorMessage, e.message).catch(() => null);
+        await markCampaignLeadFailedLegacy(job.platform, job.errorMessage, e.message).catch(() => null);
       }
-      results.push({ id: job.id, platform: job.platform, status: willRetry ? 'retry' : 'failed', error: e.message });
+      results.push({ id: job.id, platform: job.platform, status: willRetry ? 'retry' : 'failed', error: e.message, source: 'legacy' });
     }
   }
 
@@ -123,8 +172,23 @@ async function processFollowup(data: { campaignLeadId: string; message: string }
   });
 }
 
-async function markCampaignLeadFailed(platform: string, payload: string | null, reason: string) {
-  const data = JSON.parse(payload || '{}');
+async function markCampaignLeadFailed(jobType: string, payload: any, reason: string) {
+  const data = typeof payload === 'object' ? payload : {};
+  if (jobType === 'OUTREACH' && data.campaignId && data.leadId) {
+    await prisma.campaignLead.updateMany({
+      where: { campaignId: data.campaignId, leadId: data.leadId },
+      data: { status: 'FAILED', failureReason: reason?.slice(0, 500) },
+    });
+  } else if (jobType === 'FOLLOWUP' && data.campaignLeadId) {
+    await prisma.campaignLead.update({
+      where: { id: data.campaignLeadId },
+      data: { failureReason: reason?.slice(0, 500) },
+    });
+  }
+}
+
+async function markCampaignLeadFailedLegacy(platform: string, payloadStr: string | null, reason: string) {
+  const data = JSON.parse(payloadStr || '{}');
   if (platform === 'outreach' && data.campaignId && data.leadId) {
     await prisma.campaignLead.updateMany({
       where: { campaignId: data.campaignId, leadId: data.leadId },
@@ -138,7 +202,6 @@ async function markCampaignLeadFailed(platform: string, payload: string | null, 
   }
 }
 
-/** Substitute {{firstName}} / {{lastName}} / {{company}} placeholders. */
 function resolveMessage(jobMessage: string | undefined, campaign: any, lead: any): string {
   const settings = fromJsonField<Record<string, any>>(campaign.settings) || {};
   const tpl =
@@ -152,8 +215,6 @@ function resolveMessage(jobMessage: string | undefined, campaign: any, lead: any
     .replace(/{{\s*company\s*}}/gi, lead.company || '');
 }
 
-/** Send via email when a real key is configured; otherwise no-op (the message
- * is still recorded as a conversation, so the loop is demonstrable). */
 async function deliver(toEmail: string, subject: string, message: string) {
   const key = process.env.RESEND_API_KEY;
   if (key && !key.startsWith('YOUR_') && toEmail) {

@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   HaneXes — Monochrome design system (black / white / grey)
+   ============================================================ */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 0 0% 7%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 42%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 0% 20%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 89%;
+    --ring: 0 0% 7%;
+    --radius: 0.75rem;
+    --ink: 0 0% 7%;
+    --ash: 0 0% 42%;
+    --mist: 0 0% 96%;
+  }
+}
+
+@layer base {
+  * { border-color: hsl(var(--border)); }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "cv02","cv03","cv04","cv11";
+  }
+  ::selection { background: hsl(0 0% 7%); color: #fff; }
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(0 0% 82%); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: hsl(0 0% 65%); background-clip: content-box; }
+
+/* ============================================================
+   Keyframes / animations
+   ============================================================ */
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: scale(1) } }
+@keyframes shimmer { 0% { background-position: -700px 0 } 100% { background-position: 700px 0 } }
+@keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+@keyframes meshShift {
+  0% { transform: translate(0,0) scale(1) }
+  33% { transform: translate(4%,-3%) scale(1.08) }
+  66% { transform: translate(-3%,4%) scale(1.04) }
+  100% { transform: translate(0,0) scale(1) }
+}
+@keyframes spinSlow { to { transform: rotate(360deg) } }
+@keyframes barGrow { from { transform: scaleY(0) } to { transform: scaleY(1) } }
+
+.animate-fade-in { animation: fadeIn .5s ease both }
+.animate-fade-in-up { animation: fadeInUp .55s cubic-bezier(.16,1,.3,1) both }
+.animate-fade-in-down { animation: fadeInDown .5s cubic-bezier(.16,1,.3,1) both }
+.animate-scale-in { animation: scaleIn .4s cubic-bezier(.16,1,.3,1) both }
+.animate-float { animation: float 6s ease-in-out infinite }
+.stagger > * { animation: fadeInUp .55s cubic-bezier(.16,1,.3,1) both }
+.stagger > *:nth-child(1){animation-delay:.04s}.stagger > *:nth-child(2){animation-delay:.09s}
+.stagger > *:nth-child(3){animation-delay:.14s}.stagger > *:nth-child(4){animation-delay:.19s}
+.stagger > *:nth-child(5){animation-delay:.24s}.stagger > *:nth-child(6){animation-delay:.29s}
+.stagger > *:nth-child(7){animation-delay:.34s}.stagger > *:nth-child(8){animation-delay:.39s}
+
+/* ============================================================
+   Components
+   ============================================================ */
+@layer components {
+  .hx-card {
+    @apply rounded-2xl border bg-white;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px -12px rgba(0,0,0,.10);
+    transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+  }
+  .hx-card-hover:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 18px 40px -18px rgba(0,0,0,.22); border-color: hsl(0 0% 80%); }
+
+  .hx-btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 select-none; }
+  .hx-btn-primary { @apply hx-btn bg-black text-white; box-shadow: 0 6px 18px -8px rgba(0,0,0,.55); }
+  .hx-btn-primary:hover { background: #161616; transform: translateY(-1px); box-shadow: 0 10px 24px -8px rgba(0,0,0,.6); }
+  .hx-btn-primary:active { transform: translateY(0) scale(.99); }
+  .hx-btn-ghost { @apply hx-btn bg-white text-black border; }
+  .hx-btn-ghost:hover { background: hsl(0 0% 97%); border-color: hsl(0 0% 78%); }
+
+  .hx-input {
+    @apply w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-black placeholder-neutral-400 outline-none transition;
+  }
+  .hx-input:focus { border-color: hsl(0 0% 12%); box-shadow: 0 0 0 4px hsl(0 0% 0% / .06); }
+
+  .hx-badge { @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium; }
+
+  .hx-skeleton { background: linear-gradient(90deg, hsl(0 0% 94%) 25%, hsl(0 0% 88%) 37%, hsl(0 0% 94%) 63%); background-size: 700px 100%; animation: shimmer 1.4s infinite linear; }
+
+  .hx-nav-item { @apply relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200; }
+}
+
+/* Mesh background for auth / hero (monochrome) */
+.hx-mesh { position: relative; overflow: hidden; background: #0a0a0a; }
+.hx-mesh::before, .hx-mesh::after {
+  content: ""; position: absolute; inset: -30%; border-radius: 50%;
+  filter: blur(70px); opacity: .5; animation: meshShift 18s ease-in-out infinite;
+}
+.hx-mesh::before { background: radial-gradient(circle at 30% 30%, #3a3a3a, transparent 60%); }
+.hx-mesh::after { background: radial-gradient(circle at 70% 70%, #2a2a2a, transparent 55%); animation-delay: -9s; }
+.hx-grid-overlay { background-image: linear-gradient(hsl(0 0% 100% / .04) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100% / .04) 1px, transparent 1px); background-size: 32px 32px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

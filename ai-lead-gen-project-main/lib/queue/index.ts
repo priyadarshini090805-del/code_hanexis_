@@ -1,8 +1,11 @@
 /**
  * DB-backed job queue (Vercel-compatible).
- * Jobs are stored in Postgres and processed by the cron route
- * /api/cron/process-scheduled (see vercel.json).
- * Replaces the previous Bull/Redis implementation.
+ *
+ * General-purpose jobs (outreach, followup, notification) are stored in the
+ * JobQueue table with typed enums and a proper Json payload column.
+ *
+ * Content publishing jobs use PublishingQueue (its intended purpose — tracking
+ * publish attempts and failures for ScheduledContent).
  */
 import { prisma } from '@/lib/prisma';
 
@@ -43,15 +46,16 @@ function runAt(options?: JobOptions): Date {
   return new Date(Date.now() + (options?.delay || 0));
 }
 
-/** Outreach jobs are stored as ScheduledMessage rows when possible; otherwise tracked via PublishingQueue. */
 export async function addOutreachJob(data: OutreachJobData, options?: JobOptions) {
-  return prisma.publishingQueue.create({
+  return prisma.jobQueue.create({
     data: {
-      scheduledContentId: `outreach:${data.campaignId}:${data.leadId}`,
-      platform: 'outreach',
-      status: 'pending',
+      jobType: 'OUTREACH',
+      status: 'PENDING',
+      payload: data,
+      campaignId: data.campaignId,
+      leadId: data.leadId,
+      maxAttempts: options?.attempts || 3,
       nextRetryAt: runAt(options),
-      errorMessage: JSON.stringify(data),
     },
   });
 }
@@ -70,13 +74,13 @@ export async function addContentJob(data: ContentJobData, options?: JobOptions) 
 }
 
 export async function addFollowupJob(data: FollowupJobData, options?: JobOptions) {
-  return prisma.publishingQueue.create({
+  return prisma.jobQueue.create({
     data: {
-      scheduledContentId: `followup:${data.campaignLeadId}`,
-      platform: 'followup',
-      status: 'pending',
+      jobType: 'FOLLOWUP',
+      status: 'PENDING',
+      payload: data,
+      maxAttempts: options?.attempts || 3,
       nextRetryAt: runAt(options),
-      errorMessage: JSON.stringify(data),
     },
   });
 }
@@ -93,8 +97,16 @@ export async function addNotificationJob(data: NotificationJobData) {
   });
 }
 
-/** Compatibility facade for code that used `queue.contentQueue.add(...)` etc. */
+const PLATFORM_TO_JOB_TYPE: Record<string, 'OUTREACH' | 'FOLLOWUP' | 'CONTENT' | 'NOTIFICATION'> = {
+  outreach: 'OUTREACH',
+  followup: 'FOLLOWUP',
+  content: 'CONTENT',
+  notification: 'NOTIFICATION',
+};
+
+/** Compatibility facade for code that uses `queue.contentQueue.add(...)` etc. */
 function makeCompatQueue(platformDefault: string) {
+  const jobType = PLATFORM_TO_JOB_TYPE[platformDefault] || 'OUTREACH';
   return {
     async add(_name: string, data: any, options?: JobOptions) {
       const scheduledId = data?.scheduledContentId || data?.scheduledId;
@@ -106,24 +118,26 @@ function makeCompatQueue(platformDefault: string) {
       }
       if (data?.campaignId && data?.leadId) return addOutreachJob(data, options);
       if (data?.userId && data?.message) return addNotificationJob(data);
-      return prisma.publishingQueue.create({
+      return prisma.jobQueue.create({
         data: {
-          scheduledContentId: `job:${platformDefault}:${Date.now()}`,
-          platform: platformDefault,
-          status: 'pending',
+          jobType,
+          status: 'PENDING',
+          payload: data ?? {},
+          userId: data?.userId,
+          campaignId: data?.campaignId,
+          maxAttempts: options?.attempts || 3,
           nextRetryAt: runAt(options),
-          errorMessage: JSON.stringify(data ?? {}),
         },
       });
     },
     async getJobCounts() {
-      const [pending, processing, published, failed] = await Promise.all([
-        prisma.publishingQueue.count({ where: { status: 'pending' } }),
-        prisma.publishingQueue.count({ where: { status: 'processing' } }),
-        prisma.publishingQueue.count({ where: { status: 'published' } }),
-        prisma.publishingQueue.count({ where: { status: 'failed' } }),
+      const [pending, processing, completed, failed] = await Promise.all([
+        prisma.jobQueue.count({ where: { jobType, status: 'PENDING' } }),
+        prisma.jobQueue.count({ where: { jobType, status: 'PROCESSING' } }),
+        prisma.jobQueue.count({ where: { jobType, status: 'COMPLETED' } }),
+        prisma.jobQueue.count({ where: { jobType, status: 'FAILED' } }),
       ]);
-      return { waiting: pending, active: processing, completed: published, failed, delayed: 0 };
+      return { waiting: pending, active: processing, completed, failed, delayed: 0 };
     },
   };
 }

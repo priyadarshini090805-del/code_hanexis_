@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { GoogleService } from '@/lib/services/google.service';
 
-export const maxDuration = 300;
+export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-/** Vercel Cron: every 10 min, poll Gmail of all connected users for inquiry emails → leads. */
+/** Vercel Cron: every 15 min, poll Gmail of all connected users for inquiry emails → leads. */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
