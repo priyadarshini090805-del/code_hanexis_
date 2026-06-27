@@ -1,18 +1,26 @@
 export class ExportService {
   static generateCSV(data: any[], headers: string[]): string {
-    const rows = [headers];
-    
+    const rows = [headers.map(h => this.escapeCSVField(h))];
+
     data.forEach(item => {
       const row = headers.map(header => {
-        const value = item[header] || '';
-        return typeof value === 'string' && value.includes(',') 
-          ? `"${value}"` 
-          : value;
+        const value = String(item[header] ?? '');
+        return this.escapeCSVField(value);
       });
       rows.push(row);
     });
 
     return rows.map(row => row.join(',')).join('\n');
+  }
+
+  private static escapeCSVField(value: string): string {
+    if (/^[=+\-@\t\r]/.test(value)) {
+      value = "'" + value;
+    }
+    if (value.includes('"') || value.includes(',') || value.includes('\n')) {
+      return '"' + value.replace(/"/g, '""') + '"';
+    }
+    return value;
   }
 
   static generateExcel(data: any[], headers: string[]): Buffer {
