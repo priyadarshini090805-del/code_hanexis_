@@ -188,4 +188,33 @@ export class LeadManagementService {
     score += (lead.activities?.length || 0) * 2;
     return Math.min(100, score);
   }
+
+  static async getActivities(userId: string, leadId: string) {
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    if (!lead || lead.userId !== userId) throw new Error('Lead not found');
+
+    return prisma.leadActivity.findMany({
+      where: { leadId },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+  }
+
+  static async addActivity(
+    userId: string,
+    leadId: string,
+    type: string,
+    description: string
+  ) {
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    if (!lead || lead.userId !== userId) throw new Error('Lead not found');
+
+    return prisma.leadActivity.create({
+      data: {
+        leadId,
+        activityType: type as any,
+        description,
+      },
+    });
+  }
 }

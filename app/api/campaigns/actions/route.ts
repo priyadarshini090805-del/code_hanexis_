@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
-import { CampaignService } from '@/lib/services/campaign.service';
+import { CampaignManagementService } from '@/lib/services/campaign-management.service';
 import { CampaignExecutor } from '@/lib/services/campaign-executor.service';
 import { z } from 'zod';
 
@@ -31,29 +31,29 @@ export async function POST(
 
     switch (action) {
       case 'pause':
-        result = await CampaignService.pauseCampaign(params.id, auth.id);
+        result = await CampaignManagementService.pauseCampaign(params.id, auth.id);
         break;
 
       case 'resume':
-        result = await CampaignService.resumeCampaign(params.id, auth.id);
+        result = await CampaignManagementService.resumeCampaign(params.id, auth.id);
         break;
 
       case 'complete':
-        result = await CampaignService.completeCampaign(params.id, auth.id);
+        result = await CampaignManagementService.completeCampaign(params.id, auth.id);
         break;
 
       case 'add-leads':
         if (!leadIds || leadIds.length === 0) {
           throw new Error('leadIds required for add-leads action');
         }
-        result = await CampaignService.addLeadsToCampaign(params.id, leadIds, auth.id);
+        result = await CampaignManagementService.addLeadsToCampaign(params.id, leadIds, auth.id);
         break;
 
       case 'set-workflow':
         if (!workflowId) {
           throw new Error('workflowId required for set-workflow action');
         }
-        result = await CampaignService.setWorkflow(params.id, workflowId, auth.id);
+        result = await CampaignManagementService.setWorkflow(params.id, workflowId, auth.id);
         break;
 
       case 'execute':

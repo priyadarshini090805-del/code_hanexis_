@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
-import { LeadService } from '@/lib/services/lead.service';
+import { LeadManagementService } from '@/lib/services/lead-management.service';
 import { z } from 'zod';
 
 const addActivitySchema = z.object({
@@ -20,7 +20,7 @@ export async function GET(
     }
 
     const { id } = await params;
-    const activities = await LeadService.getActivities(auth.id, id);
+    const activities = await LeadManagementService.getActivities(auth.id, id);
 
     return successResponse('Activities retrieved', { activities });
   } catch (error: any) {
@@ -43,7 +43,7 @@ export async function POST(
     const body = await request.json();
     const { type, description } = addActivitySchema.parse(body);
 
-    const activity = await LeadService.addActivity(auth.id, id, type, description);
+    const activity = await LeadManagementService.addActivity(auth.id, id, type, description);
 
     return NextResponse.json(
       successResponse('Activity added', { activity }),

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { queue } from '@/lib/queue';
+import { queue, addOutreachJob } from '@/lib/queue';
 import { toJsonField, fromJsonField } from '@/lib/json-field';
+import { WorkflowRuntimeService } from '@/lib/services/workflow-runtime.service';
 
 /** Campaign management aligned to schema: CampaignActivity.action (not Activity.type),
  *  CampaignLead for stats, settings is Json, status uses ACTIVE not RUNNING. */
@@ -109,5 +110,59 @@ export class CampaignManagementService {
       });
     }
     return newCampaign;
+  }
+
+  static async launchCampaign(userId: string, campaignId: string, workflowId?: string) {
+    const campaign = await prisma.campaign.findUnique({ where: { id: campaignId }, include: { leads: true } });
+    if (!campaign || campaign.userId !== userId) throw new Error('Campaign not found');
+
+    // workflow is optional — fall back to the campaign's own workflow if set.
+    const wfId = workflowId || campaign.workflowId || undefined;
+    let workflowSteps = 0;
+    if (wfId) {
+      const workflow = await prisma.workflow.findUnique({
+        where: { id: wfId },
+        include: { _count: { select: { steps: true } } },
+      });
+      if (!workflow || workflow.userId !== userId) throw new Error('Workflow not found');
+      workflowSteps = workflow._count.steps;
+    }
+
+    if (campaign.leads.length === 0) throw new Error('Campaign has no leads to contact');
+
+    const updated = await prisma.campaign.update({
+      where: { id: campaignId },
+      data: { status: 'ACTIVE', workflowId: wfId, launchedAt: new Date(), startedAt: new Date() },
+    });
+
+    // If a workflow with steps is attached, drive each lead through the durable
+    // workflow engine (message/delay/condition/branch). Otherwise fall back to a
+    // single direct outreach per lead.
+    const useEngine = !!wfId && workflowSteps > 0;
+    for (const lead of campaign.leads) {
+      if (useEngine) {
+        await WorkflowRuntimeService.startExecution(campaignId, lead.leadId, wfId!);
+      } else {
+        await addOutreachJob({ campaignId, leadId: lead.leadId, workflowId: wfId });
+      }
+    }
+    await prisma.campaignActivity.create({
+      data: {
+        campaignId,
+        action: 'status_changed',
+        description: useEngine
+          ? `Campaign launched — ${campaign.leads.length} lead(s) entered the workflow engine`
+          : `Campaign launched — ${campaign.leads.length} lead(s) queued for outreach`,
+      },
+    });
+    return updated;
+  }
+
+  static async setWorkflow(userId: string, campaignId: string, workflowId: string) {
+    const campaign = await prisma.campaign.findUnique({ where: { id: campaignId } });
+    if (!campaign || campaign.userId !== userId) throw new Error('Campaign not found');
+    const workflow = await prisma.workflow.findUnique({ where: { id: workflowId } });
+    if (!workflow || workflow.userId !== userId) throw new Error('Workflow not found');
+    return prisma.campaign.update({ where: { id: campaignId }, data: { workflowId } });
   }
 }

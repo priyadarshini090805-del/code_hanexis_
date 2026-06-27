@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { requirePermission } from '@/lib/rbac';
 import { successResponse, errorResponse } from '@/lib/response';
-import { CampaignService } from '@/lib/services/campaign.service';
+import { CampaignManagementService } from '@/lib/services/campaign-management.service';
 
 export async function POST(
   request: NextRequest,
@@ -19,7 +19,7 @@ export async function POST(
     requirePermission(auth, 'outreach:create');
 
     const body = await request.json().catch(() => ({}));
-    const result = await CampaignService.launchCampaign(auth.id, params.id, body?.workflowId);
+    const result = await CampaignManagementService.launchCampaign(auth.id, params.id, body?.workflowId);
 
     return NextResponse.json(
       successResponse('Campaign launched successfully', { result })

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
-import { ContentService } from '@/lib/services/content.service';
+import { SchedulerService } from '@/lib/services/scheduler.service';
 import { z } from 'zod';
 
 const updateScheduleSchema = z.object({
@@ -25,7 +25,7 @@ export async function PUT(
     const data = updateScheduleSchema.parse(body);
 
     if (data.scheduledFor) {
-      const result = await ContentService.rescheduleContent(
+      const result = await SchedulerService.rescheduleContent(
         auth.id,
         id,
         new Date(data.scheduledFor)
@@ -54,7 +54,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const result = await ContentService.cancelScheduled(auth.id, id);
+    const result = await SchedulerService.cancelScheduled(auth.id, id);
 
     return successResponse('Scheduled content cancelled', result);
   } catch (error: any) {
