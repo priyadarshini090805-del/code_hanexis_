@@ -1,0 +1,20 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth/verify';
+import { successResponse, errorResponse } from '@/lib/response';
+import { AnalyticsService } from '@/lib/services/analytics.service';
+
+export async function GET(request: NextRequest) {
+  try {
+    const auth = await verifyAuth(request);
+    if (!auth) {
+      return errorResponse('Unauthorized', 401);
+    }
+
+    const kpis = await AnalyticsService.getKPISummary(auth.id);
+
+    return successResponse('KPI summary retrieved', kpis);
+  } catch (error: any) {
+    console.error('GET /api/analytics/kpi error:', error);
+    return errorResponse(error.message, 500);
+  }
+}

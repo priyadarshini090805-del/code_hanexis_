@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(npx ts-node *)",
+      "Bash(node -e ' *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -X POST http://localhost:3099/api/auth/register -H 'Content-Type: application/json' -d '{\"firstName\":\"Test\",\"lastName\":\"User\",\"email\":\"phase1test@example.com\",\"password\":\"TestPass123!\"}')",
+      "Bash(curl -s http://localhost:3099/api/leads -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcXZ2ZmQxcDAwMDFoeGh6czY5dzEwZ2QiLCJlbWFpbCI6InBoYXNlMXRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3ODI1MzUyMTAsImV4cCI6MTc4MjUzNjExMH0.OnXq2OFttst2EVSdpgFyX7bTFA5TRGm2d3drSM9UxtQ')",
+      "Bash(node -e *)",
+      "Bash(curl -s -X POST http://localhost:3099/api/auth/2fa/verify -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcXZ2ZmQxcDAwMDFoeGh6czY5dzEwZ2QiLCJlbWFpbCI6InBoYXNlMXRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3ODI1MzUyMTAsImV4cCI6MTc4MjUzNjExMH0.OnXq2OFttst2EVSdpgFyX7bTFA5TRGm2d3drSM9UxtQ' -H 'Content-Type: application/json' -d '{\"token\":\"__CMDSUB_OUTPUT__\",\"mode\":\"setup\"}')"
+    ]
+  }
+}

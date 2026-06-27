@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run vercel-build",
+  "crons": [
+    {
+      "path": "/api/cron/process-scheduled",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/poll-gmail",
+      "schedule": "0 6 * * *"
+    }
+  ]
+}
