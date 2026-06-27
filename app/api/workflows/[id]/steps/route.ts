@@ -2,12 +2,21 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const createStepSchema = z.object({
+  type: z.enum(['MESSAGE', 'DELAY', 'CONDITION', 'BRANCH']),
+  stepNumber: z.number().int().min(0),
+  delayMinutes: z.number().int().min(0).optional(),
+  messageTemplate: z.string().optional(),
+  condition: z.string().optional(),
+});
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const payload = await verifyAuth(request);
     const { id } = await params;
-    const body = await request.json();
+    const body = createStepSchema.parse(await request.json());
 
     const workflow = await prisma.workflow.findFirst({
       where: { id, userId: payload.id },

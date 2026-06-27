@@ -2,16 +2,17 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const createWorkflowSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
-    const { name, description } = body;
-
-    if (!name) {
-      return errorResponse('Workflow name is required', 400);
-    }
+    const { name, description } = createWorkflowSchema.parse(await request.json());
 
     const workflow = await prisma.workflow.create({
       data: {

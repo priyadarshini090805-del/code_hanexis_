@@ -2,16 +2,24 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { LeadManagementService } from '@/lib/services/lead-management.service';
+import { z } from 'zod';
+
+const importLeadsSchema = z.object({
+  leads: z.array(z.object({
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().email(),
+    company: z.string().optional(),
+    phone: z.string().optional(),
+    jobTitle: z.string().optional(),
+    title: z.string().optional(),
+  })).min(1),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
-    const { leads } = body;
-
-    if (!leads || !Array.isArray(leads) || leads.length === 0) {
-      return errorResponse('Invalid leads data', 400);
-    }
+    const { leads } = importLeadsSchema.parse(await request.json());
 
     const result = await LeadManagementService.bulkImportLeads(payload.id, leads);
 

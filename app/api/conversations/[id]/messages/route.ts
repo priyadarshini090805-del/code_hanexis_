@@ -2,6 +2,13 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const createMessageSchema = z.object({
+  sender: z.string().min(1),
+  content: z.string().min(1),
+  isAiSuggested: z.boolean().optional(),
+});
 
 export async function GET(
   request: NextRequest,
@@ -36,7 +43,7 @@ export async function POST(
   try {
     const payload = await verifyAuth(request);
     const { id } = await params;
-    const body = await request.json();
+    const body = createMessageSchema.parse(await request.json());
 
     const conversation = await prisma.conversation.findFirst({
       where: { id, userId: payload.id },

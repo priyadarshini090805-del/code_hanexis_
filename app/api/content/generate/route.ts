@@ -2,16 +2,18 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { ContentGenerationPipelineService } from '@/lib/services/content-generation-pipeline.service';
+import { z } from 'zod';
+
+const generateContentSchema = z.object({
+  type: z.string().min(1),
+  topic: z.string().min(1),
+  tone: z.string().optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     await verifyAuth(request);
-    const body = await request.json();
-    const { type, topic, tone } = body;
-
-    if (!type || !topic) {
-      return errorResponse('Missing required fields', 400);
-    }
+    const { type, topic, tone } = generateContentSchema.parse(await request.json());
 
     const content = await ContentGenerationPipelineService.generateContent(
       type,

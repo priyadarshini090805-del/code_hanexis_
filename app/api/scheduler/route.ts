@@ -2,6 +2,17 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const scheduleContentSchema = z.object({
+  title: z.string().max(200).optional(),
+  content: z.string().optional(),
+  platform: z.string().min(1),
+  scheduledFor: z.string().min(1),
+  contentId: z.string().optional(),
+  imageUrl: z.string().url().optional(),
+  timezone: z.string().optional(),
+});
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,11 +52,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
-    const { title, content, platform, scheduledFor, contentId, imageUrl, timezone } = body;
+    const { title, content, platform, scheduledFor, contentId, imageUrl, timezone } = scheduleContentSchema.parse(await request.json());
 
-    if (!platform || !scheduledFor || (!content && !contentId)) {
-      return errorResponse('platform, scheduledFor and content (or contentId) are required', 400);
+    if (!content && !contentId) {
+      return errorResponse('content or contentId is required', 400);
     }
 
     const when = new Date(scheduledFor);

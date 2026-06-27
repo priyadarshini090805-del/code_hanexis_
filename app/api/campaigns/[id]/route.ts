@@ -2,6 +2,13 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const updateCampaignSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().max(2000).optional(),
+  workflowId: z.string().optional(),
+});
 
 export async function GET(
   request: NextRequest,
@@ -33,7 +40,7 @@ export async function PUT(
   try {
     const payload = await verifyAuth(request);
     const { id } = await params;
-    const body = await request.json();
+    const body = updateCampaignSchema.parse(await request.json());
 
     const campaign = await prisma.campaign.findFirst({
       where: { id, userId: payload.id },
@@ -47,7 +54,7 @@ export async function PUT(
       where: { id },
       data: {
         name: body.name || campaign.name,
-        description: body.description || campaign.description,
+        description: body.description ?? campaign.description,
         workflowId: body.workflowId || campaign.workflowId,
       },
       include: { leads: true },

@@ -1,15 +1,51 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import crypto from 'crypto';
 
-// NOTE: Rate limiting is intentionally NOT done in middleware. This runs on the
-// Edge runtime, where in-memory state resets every serverless invocation (a
-// Map-based limiter is a no-op) and Prisma is unavailable. Abuse-prone routes
-// use the DB-backed limiter (lib/security/rate-limit.ts) at the route level —
-// see /api/auth/register and /api/ai/generate-message. Login is guarded by
-// brute-force protection (lib/security/brute-force.ts).
+// Routes exempt from CSRF: webhooks (HMAC-authenticated), crons (Bearer token),
+// NextAuth (framework-managed), 2fa/login-verify (JWT token, not session),
+// auth/refresh (uses refresh token), auth/logout (idempotent cookie clear).
+const CSRF_EXEMPT_PREFIXES = [
+  '/api/webhooks/',
+  '/api/cron/',
+  '/api/auth/[...nextauth]',
+  '/api/auth/2fa/login-verify',
+  '/api/auth/refresh',
+  '/api/auth/logout',
+];
 
-export function middleware(_request: NextRequest) {
+function isCsrfExempt(pathname: string): boolean {
+  return CSRF_EXEMPT_PREFIXES.some(p => pathname.startsWith(p));
+}
+
+export function middleware(request: NextRequest) {
   const response = NextResponse.next();
+  const method = request.method.toUpperCase();
+  const pathname = request.nextUrl.pathname;
+
+  // CSRF enforcement for mutating API requests
+  if (
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) &&
+    pathname.startsWith('/api/') &&
+    !isCsrfExempt(pathname)
+  ) {
+    const headerToken = request.headers.get('x-csrf-token');
+    const cookieToken = request.cookies.get('x-csrf-token')?.value;
+
+    if (headerToken && cookieToken && headerToken.length === 64 && cookieToken.length === 64) {
+      const headerBuf = Buffer.from(headerToken);
+      const cookieBuf = Buffer.from(cookieToken);
+      if (!crypto.timingSafeEqual(headerBuf, cookieBuf)) {
+        return NextResponse.json({ success: false, error: 'CSRF token validation failed' }, { status: 403 });
+      }
+    } else if (headerToken || cookieToken) {
+      return NextResponse.json({ success: false, error: 'CSRF token validation failed' }, { status: 403 });
+    }
+    // If neither token is present, allow the request through — the route
+    // may be called by server-side code or API clients that don't use cookies.
+    // Routes that require browser-session CSRF (login, register) still have
+    // their own csrfMiddleware wrapper as an additional layer.
+  }
 
   // Security Headers
   response.headers.set('X-Content-Type-Options', 'nosniff');

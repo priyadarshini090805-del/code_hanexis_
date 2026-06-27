@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
+import { z } from 'zod';
+
+const connectProviderSchema = z.object({
+  accessToken: z.string().min(1),
+  refreshToken: z.string().optional(),
+  expiresIn: z.number().optional(),
+});
 
 // POST /api/integrations/connect/[provider]
 export async function POST(
@@ -26,8 +33,7 @@ export async function POST(
       );
     }
 
-    const body = await request.json();
-    const { accessToken, refreshToken, expiresIn } = body;
+    const { accessToken, refreshToken, expiresIn } = connectProviderSchema.parse(await request.json());
 
     // Check if integration already exists
     let integration = await prisma.integration.findUnique({

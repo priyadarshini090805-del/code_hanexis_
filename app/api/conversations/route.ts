@@ -2,6 +2,12 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { ConversationService } from '@/lib/services/conversation.service';
+import { z } from 'zod';
+
+const createConversationSchema = z.object({
+  leadId: z.string().min(1),
+  platform: z.string().min(1),
+});
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,12 +29,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
-    const { leadId, platform } = body;
-
-    if (!leadId || !platform) {
-      return errorResponse('Missing required fields', 400);
-    }
+    const { leadId, platform } = createConversationSchema.parse(await request.json());
 
     const conversation = await ConversationService.getOrCreateConversation(
       payload.id,

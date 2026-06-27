@@ -3,16 +3,18 @@ import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
 import { WorkflowRuntimeService } from '@/lib/services/workflow-runtime.service';
+import { z } from 'zod';
+
+const executeWorkflowSchema = z.object({
+  campaignId: z.string().min(1),
+  leadId: z.string().min(1),
+  workflowId: z.string().min(1),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
-    const { campaignId, leadId, workflowId } = body;
-
-    if (!campaignId || !leadId || !workflowId) {
-      return errorResponse('Missing required fields', 400);
-    }
+    const { campaignId, leadId, workflowId } = executeWorkflowSchema.parse(await request.json());
 
     const campaign = await prisma.campaign.findFirst({
       where: { id: campaignId, userId: payload.id },

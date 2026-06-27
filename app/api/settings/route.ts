@@ -2,6 +2,13 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const updateSettingsSchema = z.object({
+  firstName: z.string().max(100).optional(),
+  lastName: z.string().max(100).optional(),
+  name: z.string().max(200).optional(),
+});
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,7 +41,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
+    const body = updateSettingsSchema.parse(await request.json());
 
     let firstName: string | undefined;
     let lastName: string | undefined;

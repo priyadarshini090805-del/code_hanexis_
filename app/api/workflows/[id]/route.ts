@@ -2,6 +2,13 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const updateWorkflowSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().max(2000).optional(),
+  isActive: z.boolean().optional(),
+});
 
 export async function GET(
   request: NextRequest,
@@ -33,7 +40,7 @@ export async function PUT(
   try {
     const payload = await verifyAuth(request);
     const { id } = await params;
-    const body = await request.json();
+    const body = updateWorkflowSchema.parse(await request.json());
 
     const workflow = await prisma.workflow.findFirst({
       where: { id, userId: payload.id },

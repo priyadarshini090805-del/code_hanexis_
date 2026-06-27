@@ -2,15 +2,22 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { LeadManagementService } from '@/lib/services/lead-management.service';
+import { z } from 'zod';
+
+const createLeadSchema = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().max(100),
+  email: z.string().email(),
+  company: z.string().max(200).optional(),
+  phone: z.string().max(30).optional(),
+  jobTitle: z.string().max(200).optional(),
+  title: z.string().max(200).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
-
-    if (!body.email) {
-      return errorResponse('Email is required', 400);
-    }
+    const body = createLeadSchema.parse(await request.json());
 
     const lead = await LeadManagementService.createLead(payload.id, body);
     return successResponse(lead, 'Lead created');

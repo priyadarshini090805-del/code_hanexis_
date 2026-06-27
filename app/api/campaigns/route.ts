@@ -4,11 +4,19 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
 import { CampaignManagementService } from '@/lib/services/campaign-management.service';
 import type { CampaignStatus } from '@prisma/client';
+import { z } from 'zod';
+
+const createCampaignSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  workflowId: z.string().optional(),
+  leadIds: z.array(z.string()).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const body = await request.json();
+    const body = createCampaignSchema.parse(await request.json());
 
     const campaign = await CampaignManagementService.createCampaign(
       payload.id,

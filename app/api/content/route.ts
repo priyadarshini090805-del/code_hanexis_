@@ -2,23 +2,26 @@ import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import type { ContentType } from '@prisma/client';
+
+const createContentSchema = z.object({
+  title: z.string().min(1).max(200),
+  body: z.string().min(1),
+  type: z.string().optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const payload = await verifyAuth(request);
-    const json = await request.json();
-    const { title, body, type } = json;
-
-    if (!title || !body) {
-      return errorResponse('Missing required fields', 400);
-    }
+    const { title, body, type } = createContentSchema.parse(await request.json());
 
     const content = await prisma.content.create({
       data: {
         userId: payload.id,
         title,
         body,
-        type: type || 'POST',
+        type: (type || 'POST') as ContentType,
       },
     });
 
