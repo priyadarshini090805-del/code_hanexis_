@@ -187,20 +187,45 @@ export class ConversationService {
     await prisma.conversation.delete({ where: { id: conversationId } });
   }
 
-  static async searchConversations(userId: string, query: string) {
-    return await prisma.conversation.findMany({
-      where: {
-        userId,
-        lead: {
-          OR: [
-            { firstName: { contains: query, mode: 'insensitive' } },
-            { lastName: { contains: query, mode: 'insensitive' } },
-            { email: { contains: query, mode: 'insensitive' } },
-          ],
-        },
+  static async searchConversations(
+    userId: string,
+    query: string,
+    page: number = 1,
+    limit: number = 20
+  ) {
+    const where = {
+      userId,
+      lead: {
+        OR: [
+          { firstName: { contains: query, mode: 'insensitive' as const } },
+          { lastName: { contains: query, mode: 'insensitive' as const } },
+          { email: { contains: query, mode: 'insensitive' as const } },
+          { company: { contains: query, mode: 'insensitive' as const } },
+        ],
       },
-      include: { lead: true },
-    });
+    };
+
+    const [results, total] = await Promise.all([
+      prisma.conversation.findMany({
+        where,
+        include: {
+          lead: true,
+          messages: { orderBy: { createdAt: 'desc' }, take: 1 },
+        },
+        orderBy: { lastMessageAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.conversation.count({ where }),
+    ]);
+
+    return {
+      results,
+      total,
+      page,
+      limit,
+      hasNextPage: page * limit < total,
+    };
   }
 
   static async getUnreadConversations(userId: string) {
