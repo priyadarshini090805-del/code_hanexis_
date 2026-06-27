@@ -11,7 +11,7 @@ const statusSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const decoded = await verifyAuth(request).catch(() => null)
@@ -19,6 +19,7 @@ export async function POST(
       return unauthorizedResponse('Invalid token')
     }
 
+    const { id } = await params
     const body = await request.json()
 
     // Validate input
@@ -34,8 +35,8 @@ export async function POST(
 
     // trackActivity advances the lead status AND records LeadStatusHistory
     // when the status actually changes.
-    await LeadManagementService.trackActivity(decoded.id, params.id, null, validatedData.status)
-    const lead = await LeadManagementService.getLead(decoded.id, params.id)
+    await LeadManagementService.trackActivity(decoded.id, id, null, validatedData.status)
+    const lead = await LeadManagementService.getLead(decoded.id, id)
 
     return successResponse({ lead }, 'Lead status updated successfully')
   } catch (error: any) {

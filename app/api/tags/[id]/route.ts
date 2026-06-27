@@ -12,7 +12,7 @@ const updateTagSchema = z.object({
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const decoded = await verifyAuth(request).catch(() => null)
@@ -20,8 +20,9 @@ export async function PUT(
       return unauthorizedResponse('Invalid token')
     }
 
+    const { id } = await params
     const tag = await prisma.leadTag.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!tag || tag.userId !== decoded.id) {
@@ -42,7 +43,7 @@ export async function PUT(
     }
 
     const updatedTag = await prisma.leadTag.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: validatedData.name ?? tag.name,
         color: validatedData.color ?? tag.color,
@@ -58,7 +59,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const decoded = await verifyAuth(request).catch(() => null)
@@ -66,8 +67,9 @@ export async function DELETE(
       return unauthorizedResponse('Invalid token')
     }
 
+    const { id } = await params
     const tag = await prisma.leadTag.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!tag || tag.userId !== decoded.id) {
@@ -75,7 +77,7 @@ export async function DELETE(
     }
 
     await prisma.leadTag.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return successResponse(null, 'Tag deleted successfully')

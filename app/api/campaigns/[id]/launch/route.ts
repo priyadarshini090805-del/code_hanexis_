@@ -6,7 +6,7 @@ import { CampaignManagementService } from '@/lib/services/campaign-management.se
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const auth = await verifyAuth(request);
@@ -18,8 +18,9 @@ export async function POST(
     }
     requirePermission(auth, 'outreach:create');
 
+    const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const result = await CampaignManagementService.launchCampaign(auth.id, params.id, body?.workflowId);
+    const result = await CampaignManagementService.launchCampaign(auth.id, id, body?.workflowId);
 
     return NextResponse.json(
       successResponse('Campaign launched successfully', { result })

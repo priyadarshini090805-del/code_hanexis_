@@ -6,7 +6,7 @@ import { successResponse, errorResponse } from '@/lib/response';
 // POST /api/integrations/connect/[provider]
 export async function POST(
   request: NextRequest,
-  { params }: { params: { provider: string } }
+  { params }: { params: Promise<{ provider: string }> }
 ) {
   try {
     const auth = await verifyAuth(request);
@@ -17,7 +17,8 @@ export async function POST(
       );
     }
 
-    const provider = params.provider.toUpperCase();
+    const { provider: providerParam } = await params;
+    const provider = providerParam.toUpperCase();
     if (!['LINKEDIN', 'INSTAGRAM'].includes(provider)) {
       return NextResponse.json(
         errorResponse('Invalid provider'),
