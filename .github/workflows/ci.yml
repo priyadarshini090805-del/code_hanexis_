@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    # Dummy value so Prisma/Next can build without a real database connection.
+    env:
+      DATABASE_URL: postgresql://user:pass@localhost:5432/db
+      DATABASE_DIRECT_URL: postgresql://user:pass@localhost:5432/db
+      NEXTAUTH_SECRET: ci-dummy-secret
+      AUTH_SECRET: ci-dummy-secret
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
