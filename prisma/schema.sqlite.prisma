@@ -594,6 +594,34 @@ model PublishingQueue {
   @@index([nextRetryAt])
 }
 
+model JobQueue {
+  id                    String          @id @default(cuid())
+  jobType               String          // OUTREACH, FOLLOWUP, CONTENT, NOTIFICATION
+  status                String          @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  payload               String          // JSON string (SQLite has no native Json)
+
+  userId                String?
+  campaignId            String?
+  leadId                String?
+  scheduledContentId    String?
+
+  attemptCount          Int             @default(0)
+  maxAttempts           Int             @default(3)
+  lastAttemptAt         DateTime?
+  nextRetryAt           DateTime?
+  processingStartedAt   DateTime?
+  completedAt           DateTime?
+  errorMessage          String?
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([jobType, status])
+  @@index([status, nextRetryAt])
+  @@index([userId])
+  @@index([campaignId])
+}
+
 // MODULE 7: CONVERSATION ASSISTANT
 
 model Conversation {

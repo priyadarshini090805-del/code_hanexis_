@@ -49,6 +49,9 @@ logs/
 *.log
 .vercel
 
+# Nested duplicate from zip extraction
+/ai-lead-gen-project-main/
+
 # Local SQLite demo DB
 prisma/dev.db
 prisma/dev.db-journal

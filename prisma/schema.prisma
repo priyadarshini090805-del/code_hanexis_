@@ -715,6 +715,48 @@ model PublishingQueue {
   @@index([nextRetryAt])
 }
 
+enum JobType {
+  OUTREACH
+  FOLLOWUP
+  CONTENT
+  NOTIFICATION
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model JobQueue {
+  id                    String          @id @default(cuid())
+  jobType               JobType
+  status                JobStatus       @default(PENDING)
+  payload               Json
+
+  userId                String?
+  campaignId            String?
+  leadId                String?
+  scheduledContentId    String?
+
+  attemptCount          Int             @default(0)
+  maxAttempts           Int             @default(3)
+  lastAttemptAt         DateTime?
+  nextRetryAt           DateTime?
+  processingStartedAt   DateTime?
+  completedAt           DateTime?
+  errorMessage          String?
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([jobType, status])
+  @@index([status, nextRetryAt])
+  @@index([userId])
+  @@index([campaignId])
+}
+
 // MODULE 7: CONVERSATION ASSISTANT
 
 model Conversation {
