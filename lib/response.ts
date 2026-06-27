@@ -46,9 +46,10 @@ export function successResponse<T = any>(
  */
 export function errorResponse(
   message: string,
-  statusOrDetails: number | unknown = 500
+  statusOrDetails: number | unknown = 500,
+  statusCode?: number
 ): Response {
-  const status = typeof statusOrDetails === 'number' ? statusOrDetails : 400;
+  const status = statusCode ?? (typeof statusOrDetails === 'number' ? statusOrDetails : 400);
   const error = typeof statusOrDetails === 'number' ? message : statusOrDetails;
   return NextResponse.json({ success: false, message, data: null, error }, { status });
 }
