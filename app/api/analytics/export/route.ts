@@ -37,6 +37,6 @@ export async function GET(request: NextRequest) {
     return successResponse('Analytics exported', { data: csv });
   } catch (error: any) {
     console.error('GET /api/analytics/export error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

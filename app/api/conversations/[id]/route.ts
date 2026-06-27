@@ -19,6 +19,6 @@ export async function GET(
     return successResponse('Conversation retrieved', result);
   } catch (error: any) {
     console.error('GET /api/conversations/:id error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
     return successResponse('Lead funnel retrieved', funnel);
   } catch (error: any) {
     console.error('GET /api/analytics/funnel error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

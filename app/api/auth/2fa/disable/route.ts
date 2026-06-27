@@ -34,6 +34,6 @@ export async function POST(request: NextRequest) {
 
     return successResponse({ enabled: false }, '2FA disabled');
   } catch (e: any) {
-    return errorResponse(e.message, 500);
+    console.error(e); return errorResponse('An unexpected error occurred', 500);
   }
 }

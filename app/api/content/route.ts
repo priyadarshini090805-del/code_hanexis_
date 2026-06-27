@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     return successResponse(content, 'Content saved successfully');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -50,6 +50,6 @@ export async function GET(request: NextRequest) {
 
     return successResponse(contents);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

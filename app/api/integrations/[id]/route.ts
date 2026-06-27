@@ -19,6 +19,6 @@ export async function DELETE(
     return successResponse('Integration disconnected', result);
   } catch (error: any) {
     console.error('DELETE /api/integrations/:id error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

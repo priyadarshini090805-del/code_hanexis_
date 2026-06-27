@@ -85,8 +85,7 @@ export async function POST(request: NextRequest) {
 
     return successResponse(
       {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
+        refreshed: true,
       },
       'Token refreshed successfully'
     )

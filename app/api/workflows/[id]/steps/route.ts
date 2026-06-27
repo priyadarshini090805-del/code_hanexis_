@@ -39,7 +39,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return successResponse(step, 'Step added successfully');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -71,6 +71,6 @@ export async function DELETE(
 
     return successResponse(null, 'Step deleted successfully');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

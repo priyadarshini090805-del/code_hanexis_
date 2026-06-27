@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     return successResponse(workflow, 'Workflow created');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -51,6 +51,6 @@ export async function GET(request: NextRequest) {
 
     return successResponse(workflows);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

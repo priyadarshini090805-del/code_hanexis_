@@ -17,6 +17,6 @@ export async function GET(request: NextRequest) {
     const analytics = await InstagramService.getAnalytics(payload.id, accessToken, period);
     return successResponse({ metrics: analytics });
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

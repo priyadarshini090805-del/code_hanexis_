@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const lead = await LeadManagementService.createLead(payload.id, body);
     return successResponse(lead, 'Lead created');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -47,6 +47,6 @@ export async function GET(request: NextRequest) {
 
     return successResponse(leads);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

@@ -29,6 +29,6 @@ export async function POST(request: NextRequest) {
 
     return successResponse({ secret, uri }, 'Scan the QR code, then verify with your authenticator app');
   } catch (e: any) {
-    return errorResponse(e.message, 500);
+    console.error(e); return errorResponse('An unexpected error occurred', 500);
   }
 }

@@ -39,7 +39,7 @@ export async function PUT(
       return errorResponse('Validation error', error.errors, 400);
     }
     console.error('PUT /api/scheduler/:id error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -59,6 +59,6 @@ export async function DELETE(
     return successResponse('Scheduled content cancelled', result);
   } catch (error: any) {
     console.error('DELETE /api/scheduler/:id error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

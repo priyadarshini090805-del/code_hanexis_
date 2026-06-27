@@ -189,8 +189,6 @@ async function handler(request: NextRequest) {
 
     return successResponse(
       {
-        accessToken,
-        refreshToken,
         user: {
           id: user.id,
           firstName: user.firstName,

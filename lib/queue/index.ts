@@ -49,6 +49,16 @@ function runAt(options?: JobOptions): Date {
 }
 
 export async function addOutreachJob(data: OutreachJobData, options?: JobOptions) {
+  const existing = await prisma.jobQueue.findFirst({
+    where: {
+      jobType: 'OUTREACH',
+      campaignId: data.campaignId,
+      leadId: data.leadId,
+      status: { in: ['PENDING', 'PROCESSING'] },
+    },
+  });
+  if (existing) return existing;
+
   return prisma.jobQueue.create({
     data: {
       jobType: 'OUTREACH',

@@ -29,7 +29,7 @@ export async function GET(
 
     return successResponse(campaign);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -62,7 +62,7 @@ export async function PUT(
 
     return successResponse(updated, 'Campaign updated');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -87,6 +87,6 @@ export async function DELETE(
 
     return successResponse(null, 'Campaign deleted');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

@@ -37,7 +37,7 @@ export async function PUT(
     const content = await ContentManagementService.updateContent(payload.id, id, body, payload.id);
     return successResponse(content, 'Content updated');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -52,6 +52,6 @@ export async function DELETE(
     await ContentManagementService.deleteContent(payload.id, id);
     return successResponse(null, 'Content deleted');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

@@ -47,6 +47,12 @@ export class WorkflowRuntimeService {
     });
     const results: any[] = [];
     for (const exec of due) {
+      const claimed = await prisma.workflowExecution.updateMany({
+        where: { id: exec.id, status: 'RUNNING' },
+        data: { updatedAt: now },
+      });
+      if (claimed.count === 0) continue;
+
       try {
         results.push(await this.advanceOne(exec));
       } catch (e: any) {

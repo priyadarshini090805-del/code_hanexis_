@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     return successResponse('Integrations retrieved', { integrations });
   } catch (error: any) {
     console.error('GET /api/integrations error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -63,6 +63,6 @@ export async function POST(request: NextRequest) {
       return errorResponse('Validation error', error.errors, 400);
     }
     console.error('POST /api/integrations error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

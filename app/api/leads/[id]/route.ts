@@ -42,7 +42,7 @@ export async function PUT(
     const lead = await LeadManagementService.updateLead(payload.id, id, body);
     return successResponse(lead, 'Lead updated');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -57,6 +57,6 @@ export async function DELETE(
     await LeadManagementService.deleteLead(payload.id, id);
     return successResponse(null, 'Lead deleted');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

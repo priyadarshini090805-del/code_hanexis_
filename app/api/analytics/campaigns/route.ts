@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
     return successResponse('Campaign metrics retrieved', metrics);
   } catch (error: any) {
     console.error('GET /api/analytics/campaigns error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

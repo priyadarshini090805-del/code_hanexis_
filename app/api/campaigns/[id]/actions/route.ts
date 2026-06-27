@@ -34,6 +34,6 @@ export async function POST(
 
     return successResponse(result, `Campaign ${action}ed successfully`);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

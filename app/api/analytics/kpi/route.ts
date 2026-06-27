@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
     return successResponse('KPI summary retrieved', kpis);
   } catch (error: any) {
     console.error('GET /api/analytics/kpi error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

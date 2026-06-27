@@ -29,7 +29,7 @@ export async function GET(
 
     return successResponse(workflow);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -62,7 +62,7 @@ export async function PUT(
 
     return successResponse(updated, 'Workflow updated');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -87,6 +87,6 @@ export async function DELETE(
 
     return successResponse(null, 'Workflow deleted');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

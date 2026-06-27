@@ -32,7 +32,7 @@ export async function GET(
 
     return successResponse(conversation);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -73,7 +73,7 @@ export async function POST(
 
     return successResponse(message, 'Message sent');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -98,6 +98,6 @@ export async function DELETE(
     await prisma.conversationMessage.deleteMany({ where: { conversationId: id } });
     return successResponse({ cleared: true }, 'Conversation messages cleared');
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }

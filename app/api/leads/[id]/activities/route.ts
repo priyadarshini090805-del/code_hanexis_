@@ -25,7 +25,7 @@ export async function GET(
     return successResponse('Activities retrieved', { activities });
   } catch (error: any) {
     console.error('GET /api/leads/:id/activities error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }
 
@@ -54,6 +54,6 @@ export async function POST(
       return errorResponse('Validation error', error.errors, 400);
     }
     console.error('POST /api/leads/:id/activities error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

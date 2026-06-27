@@ -39,6 +39,6 @@ export async function POST(request: NextRequest) {
     // Login mode — just confirm it's valid; session management handled by caller
     return successResponse({ verified: true }, '2FA verified');
   } catch (e: any) {
-    return errorResponse(e.message, 500);
+    console.error(e); return errorResponse('An unexpected error occurred', 500);
   }
 }

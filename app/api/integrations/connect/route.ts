@@ -45,6 +45,6 @@ export async function POST(request: NextRequest) {
       return errorResponse('Validation error', error.errors, 400);
     }
     console.error('POST /api/integrations/connect error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
 }

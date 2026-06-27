@@ -31,6 +31,6 @@ export async function POST(
 
     return successResponse(updated, 'Message rejected');
   } catch (e: any) {
-    return errorResponse(e.message, 500);
+    console.error(e); return errorResponse('An unexpected error occurred', 500);
   }
 }

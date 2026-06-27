@@ -31,6 +31,6 @@ export async function GET(request: NextRequest) {
 
     return successResponse(metrics);
   } catch (error: any) {
-    return errorResponse(error.message, 500);
+    console.error(error); return errorResponse('An unexpected error occurred', 500);
   }
 }
