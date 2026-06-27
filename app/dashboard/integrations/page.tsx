@@ -88,9 +88,8 @@ export default function IntegrationsPage() {
   };
 
   const handleConnect = (providerId: string) => {
-    const token = 'cookie' || '';
+    const token = 'cookie';
     const path = providerId.toLowerCase();
-    console.log("dsafsaklfdjaslkfdjasklfjalskd",`/api/integrations/${path}/authorize?token=${encodeURIComponent(token)}`)
     window.location.href = `/api/integrations/${path}/authorize?token=${encodeURIComponent(token)}`;
   };
 

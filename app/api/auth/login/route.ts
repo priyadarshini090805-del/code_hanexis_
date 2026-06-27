@@ -144,7 +144,7 @@ async function handler(request: NextRequest) {
         sessionToken,
         expiresAt: sessionExpiresAt,
         userAgent: request.headers.get('user-agent') || undefined,
-        ipAddress: request.headers.get('x-forwarded-for') || request.ip || undefined,
+        ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined,
         rememberMe: validatedData.rememberMe,
       },
     })
