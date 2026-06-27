@@ -86,8 +86,8 @@ describe('Sanitization Utilities', () => {
       expect(validatePhoneNumber('abcdefghij')).toBe(false)
     })
 
-    it('should allow empty phone numbers', () => {
-      expect(validatePhoneNumber('')).toBe(true)
+    it('should reject empty phone numbers', () => {
+      expect(validatePhoneNumber('')).toBe(false)
     })
   })
 })
