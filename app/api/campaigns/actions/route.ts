@@ -31,29 +31,29 @@ export async function POST(
 
     switch (action) {
       case 'pause':
-        result = await CampaignManagementService.pauseCampaign(params.id, auth.id);
+        result = await CampaignManagementService.pauseCampaign(auth.id, params.id);
         break;
 
       case 'resume':
-        result = await CampaignManagementService.resumeCampaign(params.id, auth.id);
+        result = await CampaignManagementService.resumeCampaign(auth.id, params.id);
         break;
 
       case 'complete':
-        result = await CampaignManagementService.completeCampaign(params.id, auth.id);
+        result = await CampaignManagementService.stopCampaign(auth.id, params.id);
         break;
 
       case 'add-leads':
         if (!leadIds || leadIds.length === 0) {
           throw new Error('leadIds required for add-leads action');
         }
-        result = await CampaignManagementService.addLeadsToCampaign(params.id, leadIds, auth.id);
+        result = await CampaignManagementService.addLeadsToCampaign(params.id, leadIds);
         break;
 
       case 'set-workflow':
         if (!workflowId) {
           throw new Error('workflowId required for set-workflow action');
         }
-        result = await CampaignManagementService.setWorkflow(params.id, workflowId, auth.id);
+        result = await CampaignManagementService.setWorkflow(auth.id, params.id, workflowId);
         break;
 
       case 'execute':
