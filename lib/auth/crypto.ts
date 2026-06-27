@@ -4,6 +4,14 @@ import { NextRequest } from 'next/server'
 
 const SALT_ROUNDS = 10
 
+function getJWTSecret(): string {
+  const s = process.env.JWT_SECRET
+  if (!s || s.length < 32) {
+    throw new Error('FATAL: JWT_SECRET must be set and at least 32 characters.')
+  }
+  return s
+}
+
 export async function hashPassword(password: string): Promise<string> {
   return bcryptjs.hash(password, SALT_ROUNDS)
 }
@@ -30,7 +38,7 @@ function getRefreshSecret(): string {
 }
 
 export function generateAccessToken(payload: TokenPayload): string {
-  return jwt.sign({ ...payload, type: 'access' }, process.env.JWT_SECRET!, {
+  return jwt.sign({ ...payload, type: 'access' }, getJWTSecret(), {
     expiresIn: '15m',
     algorithm: 'HS256',
   })
@@ -45,7 +53,7 @@ export function generateRefreshToken(payload: TokenPayload): string {
 
 export function verifyToken(token: string): TokenPayload | null {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload & { type?: string }
+    const decoded = jwt.verify(token, getJWTSecret()) as TokenPayload & { type?: string }
     if (decoded.type && decoded.type !== 'access') return null
     return { id: decoded.id, email: decoded.email, role: decoded.role }
   } catch {
@@ -74,7 +82,7 @@ export function getTokenFromRequest(request: NextRequest): string | null {
 export function generateVerificationToken(): string {
   return jwt.sign(
     { timestamp: Date.now() },
-    process.env.JWT_SECRET!,
+    getJWTSecret(),
     {
       expiresIn: '24h',
       algorithm: 'HS256',
@@ -85,7 +93,7 @@ export function generateVerificationToken(): string {
 export function generatePasswordResetToken(): string {
   return jwt.sign(
     { timestamp: Date.now() },
-    process.env.JWT_SECRET!,
+    getJWTSecret(),
     {
       expiresIn: '1h',
       algorithm: 'HS256',
@@ -94,7 +102,7 @@ export function generatePasswordResetToken(): string {
 }
 
 export function generateTwoFactorToken(userId: string): string {
-  return jwt.sign({ userId, type: '2fa_pending' }, process.env.JWT_SECRET!, {
+  return jwt.sign({ userId, type: '2fa_pending' }, getJWTSecret(), {
     expiresIn: '5m',
     algorithm: 'HS256',
   })
@@ -102,7 +110,7 @@ export function generateTwoFactorToken(userId: string): string {
 
 export function verifyTwoFactorToken(token: string): { userId: string } | null {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; type?: string }
+    const decoded = jwt.verify(token, getJWTSecret()) as { userId: string; type?: string }
     if (decoded.type !== '2fa_pending') return null
     return { userId: decoded.userId }
   } catch {

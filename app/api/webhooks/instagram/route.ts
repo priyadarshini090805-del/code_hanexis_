@@ -27,11 +27,12 @@ export async function POST(request: NextRequest) {
         .digest('hex');
       const sigBuf = Buffer.from(signature || '');
       const expBuf = Buffer.from(expected);
-      // timingSafeEqual throws if buffers differ in length — guard first so a
-      // bad/missing signature returns 401 instead of crashing with a 500.
       if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
+    } else if (process.env.NODE_ENV === 'production') {
+      console.error('INSTAGRAM_CLIENT_SECRET not set — rejecting webhook in production');
+      return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
     }
 
     const event = JSON.parse(body || '{}');

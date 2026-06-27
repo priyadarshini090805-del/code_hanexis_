@@ -16,7 +16,9 @@ export async function getRequestUserId(request: NextRequest): Promise<string | n
   const queryToken = request.nextUrl.searchParams.get('token');
   if (queryToken) {
     try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || '');
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret || jwtSecret.length < 32) throw new Error('JWT_SECRET invalid');
+      const secret = new TextEncoder().encode(jwtSecret);
       const verified = await jwtVerify(queryToken, secret);
       if (verified.payload.id) return verified.payload.id as string;
     } catch { /* fall through */ }

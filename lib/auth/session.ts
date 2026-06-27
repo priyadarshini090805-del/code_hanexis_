@@ -12,7 +12,11 @@ export interface SessionUser {
 }
 
 function secret(): Uint8Array {
-  return new TextEncoder().encode(process.env.JWT_SECRET || '');
+  const s = process.env.JWT_SECRET;
+  if (!s || s.length < 32) {
+    throw new Error('FATAL: JWT_SECRET must be set and at least 32 characters.');
+  }
+  return new TextEncoder().encode(s);
 }
 
 /**
