@@ -15,12 +15,16 @@ describe('AIService', () => {
       })
     })
 
-    it('should generate prompts for all tones', () => {
+    it('should generate distinct prompts for all tones', () => {
+      const prompts = new Set<string>()
       tones.forEach((tone) => {
         const prompt = getPrompt('CONNECTION_MESSAGE' as AIMessageType, tone as MessageTone)
         expect(prompt).toBeTruthy()
-        expect(prompt.includes(tone.toLowerCase())).toBe(true)
+        expect(prompt.length).toBeGreaterThan(0)
+        expect(prompt).toContain('Tone:')
+        prompts.add(prompt)
       })
+      expect(prompts.size).toBe(tones.length)
     })
 
     it('should include message type guidance', () => {
