@@ -73,10 +73,12 @@ describe('RBAC System', () => {
       expect(hasPermission(UserRole.SALES, 'users:read')).toBe(false)
     })
 
-    it('should grant USER minimal permissions', () => {
+    it('should grant USER workspace-scoped permissions but not admin capabilities', () => {
       expect(hasPermission(UserRole.USER, 'leads:read')).toBe(true)
+      expect(hasPermission(UserRole.USER, 'leads:create')).toBe(true)
       expect(hasPermission(UserRole.USER, 'outreach:read')).toBe(true)
-      expect(hasPermission(UserRole.USER, 'leads:create')).toBe(false)
+      expect(hasPermission(UserRole.USER, 'users:read')).toBe(false)
+      expect(hasPermission(UserRole.USER, 'system:audit_logs')).toBe(false)
     })
   })
 })
