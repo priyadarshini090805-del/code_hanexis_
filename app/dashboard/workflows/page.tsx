@@ -1,134 +1,142 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { Workflow, Plus, Search, Zap, ArrowRight } from 'lucide-react'
+import { PageTransition, StaggerList, StaggerItem, springs } from '@/components/motion'
+import { SkeletonCard } from '@/components/motion/Skeleton'
+import { EmptyState } from '@/components/motion/EmptyState'
 
-interface Workflow {
-  id: string;
-  name: string;
-  description?: string;
-  isActive: boolean;
-  createdAt: string;
-  stepsCount: number;
+interface WorkflowItem {
+  id: string
+  name: string
+  description?: string
+  isActive: boolean
+  createdAt: string
+  stepsCount: number
 }
 
 export default function WorkflowsPage() {
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [workflows, setWorkflows] = useState<WorkflowItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    fetchWorkflows();
-  }, []);
+    fetchWorkflows()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const fetchWorkflows = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/workflows', {
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch workflows');
-
-      const data = await response.json();
-      setWorkflows(data.data?.workflows || []);
-    } catch (err: any) {
-      setError(err.message);
+      setLoading(true)
+      const response = await fetch('/api/workflows')
+      if (!response.ok) throw new Error('Failed to fetch workflows')
+      const data = await response.json()
+      setWorkflows(data.data?.workflows || data.data || [])
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const filteredWorkflows = workflows.filter(w =>
-    w.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading workflows...</div>;
   }
 
+  const filtered = workflows.filter(w =>
+    w.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">Workflows</h1>
-          <Link
-            href="/dashboard/workflows/new"
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900"
-          >
-            Create Workflow
-          </Link>
+    <PageTransition>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--hx-text)' }}>Workflows</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--hx-text-secondary)' }}>
+            Automate your outreach pipeline
+          </p>
         </div>
+        <Link href="/dashboard/workflows/new" className="hx-btn-primary text-xs gap-1.5">
+          <Plus size={14} /> Create Workflow
+        </Link>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
-          </div>
-        )}
+      {error && (
+        <motion.div className="p-4 rounded-xl mb-6 text-sm"
+          style={{ background: 'rgba(166,60,60,0.06)', color: 'var(--hx-error)', border: '1px solid rgba(166,60,60,0.1)' }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {error}
+        </motion.div>
+      )}
 
-        <div className="mb-6">
+      {/* Search */}
+      <motion.div className="mb-6" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, ...springs.gentle }}>
+        <div className="relative max-w-md">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--hx-text-secondary)', opacity: 0.5 }} />
           <input
             type="text"
             placeholder="Search workflows..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            className="hx-input pl-9"
           />
         </div>
+      </motion.div>
 
-        {filteredWorkflows.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">No workflows yet</p>
-            <Link
-              href="/dashboard/workflows/new"
-              className="text-black hover:underline"
-            >
-              Create your first workflow
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredWorkflows.map(workflow => (
-              <div
-                key={workflow.id}
-                className="border border-gray-200 rounded-lg p-6 hover:border-black transition"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-black">{workflow.name}</h3>
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full ${
-                      workflow.isActive
-                        ? 'bg-neutral-100 text-neutral-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    {workflow.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </div>
-
-                {workflow.description && (
-                  <p className="text-gray-600 text-sm mb-4">{workflow.description}</p>
-                )}
-
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                  <span>{workflow.stepsCount} steps</span>
-                  <span>{new Date(workflow.createdAt).toLocaleDateString()}</span>
-                </div>
-
-                <Link
-                  href={`/dashboard/workflows/${workflow.id}`}
-                  className="inline-block px-4 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-900"
-                >
-                  Edit
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} lines={2} />)}
+        </div>
+      ) : filtered.length > 0 ? (
+        <StaggerList className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((w, i) => (
+            <StaggerItem key={w.id} index={i}>
+              <Link href={`/dashboard/workflows/${w.id}`}>
+                <motion.div className="hx-card p-5 group cursor-pointer"
+                  whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{ background: w.isActive ? 'rgba(47,107,69,0.08)' : 'rgba(108,36,53,0.06)' }}>
+                        <Zap size={16} style={{ color: w.isActive ? 'var(--hx-success)' : 'var(--hx-brand)' }} />
+                      </div>
+                      <div>
+                        <h3 className="text-[15px] font-semibold" style={{ color: 'var(--hx-text)' }}>{w.name}</h3>
+                        {w.description && (
+                          <p className="text-xs mt-0.5 line-clamp-1" style={{ color: 'var(--hx-text-secondary)' }}>{w.description}</p>
+                        )}
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold"
+                      style={{
+                        background: w.isActive ? 'rgba(47,107,69,0.08)' : 'rgba(0,0,0,0.04)',
+                        color: w.isActive ? 'var(--hx-success)' : 'var(--hx-text-secondary)',
+                      }}>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: w.isActive ? 'var(--hx-success)' : 'var(--hx-text-secondary)' }} />
+                      {w.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid var(--hx-border-light)' }}>
+                    <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--hx-text-secondary)' }}>
+                      <span>{w.stepsCount || 0} steps</span>
+                      <span>{new Date(w.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: 'var(--hx-text-secondary)' }} />
+                  </div>
+                </motion.div>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerList>
+      ) : (
+        <motion.div className="hx-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <EmptyState
+            icon={<Workflow size={24} style={{ color: 'var(--hx-brand)' }} />}
+            title="No workflows yet"
+            description="Build automated outreach sequences with delays, conditions, and AI-generated messages."
+            action={<Link href="/dashboard/workflows/new" className="hx-btn-primary text-xs">Create Workflow</Link>}
+          />
+        </motion.div>
+      )}
+    </PageTransition>
+  )
 }
