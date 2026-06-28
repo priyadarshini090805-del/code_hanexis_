@@ -1,184 +1,148 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { CheckCircle, AlertCircle, XCircle } from 'lucide-react'
+import { PageTransition, StaggerList, StaggerItem } from '@/components/motion'
+import { SkeletonCard } from '@/components/motion/Skeleton'
 
 interface Integration {
-  id: string;
-  provider: 'LINKEDIN' | 'INSTAGRAM' | 'GOOGLE';
-  status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED';
-  profileName?: string;
-  profileUrl?: string;
-  connectedAt?: string;
-  lastSyncAt?: string;
+  id: string
+  provider: 'LINKEDIN' | 'INSTAGRAM' | 'GOOGLE'
+  status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED'
+  profileName?: string
+  profileUrl?: string
+  connectedAt?: string
+  lastSyncAt?: string
 }
 
-const providers = [
-  {
-    name: 'LinkedIn',
-    id: 'LINKEDIN',
-    icon: '💼',
-    description: 'Connect your LinkedIn account to sync leads and publish posts',
-    color: 'bg-neutral-50',
-  },
-  {
-    name: 'Instagram',
-    id: 'INSTAGRAM',
-    icon: '📷',
-    description: 'Connect Instagram to publish and schedule content',
-    color: 'bg-neutral-50',
-  },
-  {
-    name: 'Google',
-    id: 'GOOGLE',
-    icon: '🔍',
-    description: 'Connect Google to capture Gmail inquiries as leads automatically',
-    color: 'bg-neutral-50',
-  },
-];
+const PROVIDERS = [
+  { name: 'LinkedIn', id: 'LINKEDIN', icon: '💼', description: 'Sync leads, publish posts, and track engagement' },
+  { name: 'Instagram', id: 'INSTAGRAM', icon: '📷', description: 'Publish content and capture leads from DMs and comments' },
+  { name: 'Google', id: 'GOOGLE', icon: '🔍', description: 'Capture Gmail inquiries as leads automatically' },
+]
+
+const STATUS_CONFIG = {
+  ACTIVE: { icon: CheckCircle, color: 'var(--hx-success)', label: 'Connected', bg: 'rgba(47,107,69,0.08)' },
+  INACTIVE: { icon: XCircle, color: 'var(--hx-text-secondary)', label: 'Disconnected', bg: 'rgba(0,0,0,0.04)' },
+  EXPIRED: { icon: AlertCircle, color: 'var(--hx-warning)', label: 'Expired', bg: 'rgba(196,139,42,0.08)' },
+}
 
 export default function IntegrationsPage() {
-  const [integrations, setIntegrations] = useState<Integration[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const [banner, setBanner] = useState('');
+  const [integrations, setIntegrations] = useState<Integration[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [banner, setBanner] = useState('')
 
   useEffect(() => {
-    fetchIntegrations();
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('connected')) setBanner(`${params.get('connected')} connected successfully!`);
-    if (params.get('error')) setError(decodeURIComponent(params.get('error') || ''));
-  }, []);
+    fetchIntegrations()
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('connected')) setBanner(`${params.get('connected')} connected successfully!`)
+    if (params.get('error')) setError(decodeURIComponent(params.get('error') || ''))
+  }, [])
 
   const fetchIntegrations = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/integrations', {
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch integrations');
-      const data = await response.json();
-      setIntegrations(data.data?.integrations || []);
-    } catch (err: any) {
-      setError(err.message);
+      setLoading(true)
+      const response = await fetch('/api/integrations')
+      if (!response.ok) throw new Error('Failed to fetch integrations')
+      const data = await response.json()
+      setIntegrations(data.data?.integrations || [])
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const getIntegration = (providerId: string) => {
-    return integrations.find(i => i.provider === providerId);
-  };
+  const getIntegration = (providerId: string) => integrations.find(i => i.provider === providerId)
 
   const disconnectIntegration = async (id: string) => {
-    if (!confirm('Disconnect this integration?')) return;
+    if (!confirm('Disconnect this integration?')) return
     try {
-      const response = await fetch(`/api/integrations/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to disconnect');
-      setIntegrations(integrations.filter(i => i.id !== id));
-    } catch (err: any) {
-      setError(err.message);
+      const response = await fetch(`/api/integrations/${id}`, { method: 'DELETE' })
+      if (!response.ok) throw new Error('Failed to disconnect')
+      setIntegrations(integrations.filter(i => i.id !== id))
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed')
     }
-  };
+  }
 
   const handleConnect = (providerId: string) => {
-    const path = providerId.toLowerCase();
-    window.location.href = `/api/integrations/${path}/authorize`;
-  };
-
-  const formatDate = (date: string | undefined) => {
-    if (!date) return '—';
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
+    window.location.href = `/api/integrations/${providerId.toLowerCase()}/authorize`
+  }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black">Integrations</h1>
-          <p className="text-gray-600 mt-2">Connect your social media and other platforms</p>
+    <PageTransition>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--hx-text)' }}>Integrations</h1>
+        <p className="text-sm mt-0.5" style={{ color: 'var(--hx-text-secondary)' }}>Connect your platforms to automate lead generation</p>
+      </div>
+
+      {banner && (
+        <motion.div className="p-4 rounded-xl mb-6 text-sm flex items-center gap-2"
+          style={{ background: 'rgba(47,107,69,0.06)', color: 'var(--hx-success)', border: '1px solid rgba(47,107,69,0.1)' }}
+          initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+          <CheckCircle size={16} /> {banner}
+        </motion.div>
+      )}
+
+      {error && (
+        <motion.div className="p-4 rounded-xl mb-6 text-sm"
+          style={{ background: 'rgba(166,60,60,0.06)', color: 'var(--hx-error)', border: '1px solid rgba(166,60,60,0.1)' }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{error}</motion.div>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} lines={4} />)}
         </div>
+      ) : (
+        <StaggerList className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {PROVIDERS.map((provider, i) => {
+            const integration = getIntegration(provider.id)
+            const sc = integration ? STATUS_CONFIG[integration.status] || STATUS_CONFIG.INACTIVE : null
+            return (
+              <StaggerItem key={provider.id} index={i}>
+                <motion.div className="hx-card p-6 flex flex-col h-full"
+                  whileHover={{ y: -3, transition: { duration: 0.2 } }}>
+                  <div className="text-3xl mb-4">{provider.icon}</div>
+                  <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--hx-text)' }}>{provider.name}</h3>
+                  <p className="text-xs mb-5 flex-1" style={{ color: 'var(--hx-text-secondary)' }}>{provider.description}</p>
 
-        {banner && (
-          <div className="mb-4 p-4 bg-neutral-50 border border-neutral-200 rounded-lg text-neutral-800">
-            {banner}
-          </div>
-        )}
-
-        {error && (
-          <div className="mb-4 p-4 bg-neutral-50 border border-neutral-200 rounded-lg text-neutral-800">
-            {error}
-          </div>
-        )}
-
-        {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading integrations...</div>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-            {providers.map(provider => {
-              const integration = getIntegration(provider.id);
-              return (
-                <div
-                  key={provider.id}
-                  className={`${provider.color} border-2 border-gray-200 rounded-lg p-6`}
-                >
-                  <div className="text-4xl mb-3">{provider.icon}</div>
-                  <h3 className="text-xl font-bold text-black mb-2">{provider.name}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{provider.description}</p>
-
-                  {integration ? (
+                  {integration && sc ? (
                     <div className="space-y-3">
-                      <div className="p-3 bg-white rounded-lg">
-                        <div className="text-xs text-gray-600">Status</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div
-                            className={`w-2 h-2 rounded-full ${
-                              integration.status === 'ACTIVE' ? 'bg-neutral-500' : 'bg-neutral-500'
-                            }`}
-                          />
-                          <span className="font-medium text-black">{integration.status}</span>
-                        </div>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: sc.bg }}>
+                        <sc.icon size={14} style={{ color: sc.color }} />
+                        <span className="text-xs font-semibold" style={{ color: sc.color }}>{sc.label}</span>
                       </div>
-
                       {integration.profileName && (
-                        <div className="p-3 bg-white rounded-lg">
-                          <div className="text-xs text-gray-600">Profile</div>
-                          <div className="font-medium text-black">{integration.profileName}</div>
+                        <div className="px-3 py-2 rounded-lg" style={{ background: 'var(--hx-surface-secondary)' }}>
+                          <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--hx-text-secondary)' }}>Profile</div>
+                          <div className="text-sm font-medium mt-0.5" style={{ color: 'var(--hx-text)' }}>{integration.profileName}</div>
                         </div>
                       )}
-
-                      <div className="p-3 bg-white rounded-lg">
-                        <div className="text-xs text-gray-600">Connected</div>
-                        <div className="font-medium text-black">{formatDate(integration.connectedAt)}</div>
-                      </div>
-
-                      <button
-                        onClick={() => disconnectIntegration(integration.id)}
-                        className="w-full px-4 py-2 bg-neutral-100 text-neutral-600 rounded-lg hover:bg-neutral-200 font-medium"
-                      >
+                      {integration.connectedAt && (
+                        <div className="text-[11px]" style={{ color: 'var(--hx-text-secondary)' }}>
+                          Connected {new Date(integration.connectedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                      )}
+                      <button onClick={() => disconnectIntegration(integration.id)}
+                        className="w-full hx-btn-ghost text-xs justify-center" style={{ color: 'var(--hx-error)' }}>
                         Disconnect
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => handleConnect(provider.id)}
-                      className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 font-medium"
-                    >
+                    <button onClick={() => handleConnect(provider.id)} className="w-full hx-btn-primary text-xs justify-center">
                       Connect {provider.name}
                     </button>
                   )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+                </motion.div>
+              </StaggerItem>
+            )
+          })}
+        </StaggerList>
+      )}
+    </PageTransition>
+  )
 }
