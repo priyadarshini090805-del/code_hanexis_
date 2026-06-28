@@ -23,6 +23,17 @@ export async function GET(request: NextRequest) {
   }
 
   const now = new Date();
+  const staleThreshold = new Date(now.getTime() - 5 * 60 * 1000);
+
+  // Recover items stuck in PUBLISHING for > 5 minutes (crash recovery)
+  await prisma.scheduledContent.updateMany({
+    where: {
+      status: 'PUBLISHING' as any,
+      updatedAt: { lt: staleThreshold },
+    },
+    data: { status: 'SCHEDULED' as any },
+  });
+
   const due = await prisma.scheduledContent.findMany({
     where: {
       status: { in: ['SCHEDULED', 'PENDING'] as any },
@@ -32,14 +43,15 @@ export async function GET(request: NextRequest) {
     orderBy: { scheduledFor: 'asc' },
   });
 
-  const results: any[] = [];
+  const results: Array<{ id: string; status: string; error?: string }> = [];
 
   for (const item of due) {
-    // claim
-    await prisma.scheduledContent.update({
-      where: { id: item.id },
+    // Atomic claim — only one cron invocation can win
+    const claimed = await prisma.scheduledContent.updateMany({
+      where: { id: item.id, status: { in: ['SCHEDULED', 'PENDING'] as any } },
       data: { status: 'PUBLISHING' as any },
-    }).catch(() => null);
+    });
+    if (claimed.count === 0) continue;
 
     try {
       let postRef = '';
@@ -70,10 +82,11 @@ export async function GET(request: NextRequest) {
         metadata: { scheduledContentId: item.id, postRef },
       });
       results.push({ id: item.id, status: 'published' });
-    } catch (e: any) {
+    } catch (e) {
       const attempts = await prisma.publishingQueue.count({
         where: { scheduledContentId: item.id, status: 'failed' },
       });
+      const errMessage = e instanceof Error ? e.message : String(e);
       const isTemporary = e instanceof InstagramPublishError ? e.temporary : false;
       const willRetry = isTemporary && attempts < 2;
       const backoffMs = willRetry ? Math.pow(2, attempts) * 5 * 60 * 1000 : 0;
@@ -84,7 +97,7 @@ export async function GET(request: NextRequest) {
           status: 'failed',
           attemptCount: attempts + 1,
           lastAttemptAt: new Date(),
-          errorMessage: e.message?.slice(0, 900),
+          errorMessage: errMessage.slice(0, 900),
         },
       });
       logger.error('Scheduled content publish failed', {
@@ -93,18 +106,18 @@ export async function GET(request: NextRequest) {
       await prisma.scheduledContent.update({
         where: { id: item.id },
         data: willRetry
-          ? { status: 'SCHEDULED' as any, scheduledFor: new Date(Date.now() + backoffMs), failureReason: e.message?.slice(0, 500) }
-          : { status: 'FAILED' as any, failureReason: e.message?.slice(0, 500) },
+          ? { status: 'SCHEDULED' as any, scheduledFor: new Date(Date.now() + backoffMs), failureReason: errMessage.slice(0, 500) }
+          : { status: 'FAILED' as any, failureReason: errMessage.slice(0, 500) },
       });
       if (!willRetry) {
         await NotificationService.create(item.userId, {
           type: 'POST_FAILED',
           title: `Failed to publish to ${item.platform}`,
-          body: e.message?.slice(0, 300),
+          body: errMessage.slice(0, 300),
           link: '/dashboard/scheduler',
         });
       }
-      results.push({ id: item.id, status: willRetry ? 'retry_scheduled' : 'failed', error: e.message });
+      results.push({ id: item.id, status: willRetry ? 'retry_scheduled' : 'failed', error: errMessage });
     }
   }
 

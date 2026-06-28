@@ -11,8 +11,23 @@ import { logger } from '@/lib/logger';
  */
 
 const GRAPH = 'https://graph.instagram.com/v21.0';
+const FETCH_TIMEOUT_MS = 15_000;
 
 const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+
+function fetchWithTimeout(url: string, options?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+function wrapNetworkError(err: unknown): InstagramPublishError {
+  const message = err instanceof Error ? err.message : String(err);
+  if (message.includes('abort') || message.includes('timeout')) {
+    return new InstagramPublishError('Instagram API request timed out', 408, true);
+  }
+  return new InstagramPublishError(`Instagram API network error: ${message}`, 0, true);
+}
 
 export class InstagramPublishError extends Error {
   readonly temporary: boolean;
@@ -125,9 +140,20 @@ export class InstagramService {
       igUserId = row.scope?.replace('ig_user_id:', '') || 'me';
     }
 
+    // Token is fully expired — mark integration as expired
+    if (row.expiresAt && row.expiresAt.getTime() < Date.now()) {
+      await prisma.integration.update({
+        where: { id: integration.id },
+        data: { status: 'EXPIRED' },
+      });
+      logger.warn('Instagram token expired, integration marked EXPIRED', { subsystem: 'instagram', userId });
+      throw new Error('Instagram token has expired. Please reconnect your account in Integrations.');
+    }
+
+    // Refresh if within 7 days of expiry
     if (row.expiresAt && row.expiresAt.getTime() < Date.now() + 7 * 24 * 3600 * 1000) {
       try {
-        const res = await fetch(
+        const res = await fetchWithTimeout(
           `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${token}`
         );
         if (res.ok) {
@@ -140,8 +166,11 @@ export class InstagramService {
               expiresAt: new Date(Date.now() + (data.expires_in || 5184000) * 1000),
             },
           });
+          logger.info('Instagram token refreshed', { subsystem: 'instagram', userId });
         }
-      } catch { /* keep existing token */ }
+      } catch {
+        logger.warn('Instagram token refresh failed, using existing token', { subsystem: 'instagram', userId });
+      }
     }
     return { token, igUserId };
   }
@@ -223,11 +252,16 @@ export class InstagramService {
     const fullCaption = hashtags?.length ? `${caption}\n\n${hashtags.map(h => (h.startsWith('#') ? h : `#${h}`)).join(' ')}` : caption;
 
     // Step 1: Create media container
-    const createRes = await fetch(`${GRAPH}/${igUserId}/media`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ image_url: imageUrl!, caption: fullCaption, access_token: token }),
-    });
+    let createRes: Response;
+    try {
+      createRes = await fetchWithTimeout(`${GRAPH}/${igUserId}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ image_url: imageUrl!, caption: fullCaption, access_token: token }),
+      });
+    } catch (netErr) {
+      throw wrapNetworkError(netErr);
+    }
     if (!createRes.ok) {
       const errBody = await createRes.text();
       const temporary = this.isTemporaryError(createRes.status, errBody);
@@ -241,14 +275,19 @@ export class InstagramService {
     // Step 2: Poll container status
     let containerReady = false;
     for (let attempt = 0; attempt < 10; attempt++) {
-      const statusRes = await fetch(`${GRAPH}/${container.id}?fields=status_code,status&access_token=${token}`);
-      if (statusRes.ok) {
-        const statusData = await statusRes.json();
-        if (statusData.status_code === 'FINISHED') { containerReady = true; break; }
-        if (statusData.status_code === 'ERROR') {
-          logger.error('Instagram container processing failed', { subsystem: 'instagram', userId, containerId: container.id });
-          throw new InstagramPublishError('Instagram rejected the media. Check image URL and format.', 400, false);
+      try {
+        const statusRes = await fetchWithTimeout(`${GRAPH}/${container.id}?fields=status_code,status&access_token=${token}`);
+        if (statusRes.ok) {
+          const statusData = await statusRes.json();
+          if (statusData.status_code === 'FINISHED') { containerReady = true; break; }
+          if (statusData.status_code === 'ERROR') {
+            logger.error('Instagram container processing failed', { subsystem: 'instagram', userId, containerId: container.id });
+            throw new InstagramPublishError('Instagram rejected the media. Check image URL and format.', 400, false);
+          }
         }
+      } catch (pollErr) {
+        if (pollErr instanceof InstagramPublishError) throw pollErr;
+        // Network error during poll — continue to next attempt
       }
       await new Promise(r => setTimeout(r, 2000));
     }
@@ -258,11 +297,16 @@ export class InstagramService {
     }
 
     // Step 3: Publish
-    const publishRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ creation_id: container.id, access_token: token }),
-    });
+    let publishRes: Response;
+    try {
+      publishRes = await fetchWithTimeout(`${GRAPH}/${igUserId}/media_publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ creation_id: container.id, access_token: token }),
+      });
+    } catch (netErr) {
+      throw wrapNetworkError(netErr);
+    }
     if (!publishRes.ok) {
       const errBody = await publishRes.text();
       const temporary = this.isTemporaryError(publishRes.status, errBody);
