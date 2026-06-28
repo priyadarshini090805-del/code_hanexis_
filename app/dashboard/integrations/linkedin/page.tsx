@@ -99,7 +99,7 @@ export default function LinkedInManagementPage() {
           </div>
         )}
 
-        <div className="bg-white border border-[var(--hx-border)] rounded-lg p-6">
+        <div className="bg-[var(--hx-surface)] border border-[var(--hx-border)] rounded-lg p-6">
           <h2 className="text-xl font-semibold text-[var(--hx-text)] mb-4">Connections</h2>
           <button
             onClick={handleSyncConnections}

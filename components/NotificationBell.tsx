@@ -91,9 +91,9 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-96 bg-[var(--hx-surface)] border border-[var(--hx-border)] rounded-xl shadow-xl z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <h3 className="font-semibold text-black">Notifications</h3>
+            <h3 className="font-semibold text-[var(--hx-text)]">Notifications</h3>
             {unread > 0 && (
               <button onClick={markAllRead} className="text-xs text-neutral-600 hover:underline">
                 Mark all read
@@ -109,12 +109,12 @@ export default function NotificationBell() {
                   key={n.id}
                   onClick={() => openItem(n)}
                   className={`w-full text-left px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition flex gap-3 ${
-                    !n.read ? 'bg-neutral-50/50' : ''
+                    !n.read ? 'bg-[var(--hx-surface-secondary)]/50' : ''
                   }`}
                 >
                   <span className="text-lg shrink-0">{TYPE_ICONS[n.type] || '📌'}</span>
                   <div className="min-w-0">
-                    <div className={`text-sm ${!n.read ? 'font-semibold' : 'font-medium'} text-black truncate`}>
+                    <div className={`text-sm ${!n.read ? 'font-semibold' : 'font-medium'} text-[var(--hx-text)] truncate`}>
                       {n.title}
                     </div>
                     {n.body && <div className="text-xs text-gray-600 truncate">{n.body}</div>}

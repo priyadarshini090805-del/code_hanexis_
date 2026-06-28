@@ -158,7 +158,7 @@ export default function WorkflowDetailPage() {
           )}
         </div>
 
-        <div className="bg-white border border-[var(--hx-border)] rounded-lg p-6">
+        <div className="bg-[var(--hx-surface)] border border-[var(--hx-border)] rounded-lg p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-[var(--hx-text)]">Steps ({workflow.steps.length})</h2>
             <Link

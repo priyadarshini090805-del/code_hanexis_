@@ -273,7 +273,7 @@ function AIPage() {
             {result && (
               <div className="mt-8 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-[var(--hx-text)] mb-4">Generated Message</h3>
-                <div className="bg-white p-4 border border-[var(--hx-border)] rounded mb-4 max-h-64 overflow-y-auto">
+                <div className="bg-[var(--hx-surface)] p-4 border border-[var(--hx-border)] rounded mb-4 max-h-64 overflow-y-auto">
                   <p className="text-[var(--hx-text)] whitespace-pre-wrap">{result.message}</p>
                 </div>
                 <div className="flex gap-2">

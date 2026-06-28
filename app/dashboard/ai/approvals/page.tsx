@@ -108,7 +108,7 @@ export default function ApprovalsPage() {
                 statusFilter === s ? 'border-black hx-btn-primary' : 'border-[var(--hx-border)] hover:border-gray-400'
               }`}
             >
-              <p className={`text-2xl font-bold ${statusFilter === s ? 'text-white' : 'text-black'}`}>{summary[s]}</p>
+              <p className={`text-2xl font-bold ${statusFilter === s ? 'text-white' : 'text-[var(--hx-text)]'}`}>{summary[s]}</p>
               <p className={`text-xs mt-1 uppercase tracking-wider ${statusFilter === s ? 'text-gray-300' : 'text-[var(--hx-text-secondary)]'}`}>{s}</p>
             </button>
           ))}

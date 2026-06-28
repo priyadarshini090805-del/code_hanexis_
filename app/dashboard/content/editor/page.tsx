@@ -195,7 +195,7 @@ export default function ContentEditorPage() {
               <h3 className="font-semibold text-[var(--hx-text)] mb-4">Preview</h3>
               <div className="text-sm text-[var(--hx-text-secondary)]">
                 <p className="font-medium text-[var(--hx-text)] mb-2">{formData.title || 'No title'}</p>
-                <p className="text-xs bg-white p-2 rounded border border-[var(--hx-border)] mb-4">
+                <p className="text-xs bg-[var(--hx-surface)] p-2 rounded border border-[var(--hx-border)] mb-4">
                   {formData.body.substring(0, 150) || 'Content preview will appear here...'}
                 </p>
                 <p className="text-xs text-[var(--hx-text-secondary)]">

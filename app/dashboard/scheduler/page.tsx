@@ -123,7 +123,7 @@ export default function SchedulerPage() {
               { label: 'Pending', value: stats.pending, color: 'text-[var(--hx-text-secondary)]' },
               { label: 'Published', value: stats.published, color: 'text-[var(--hx-text-secondary)]' },
               { label: 'Failed', value: stats.failed || 0, color: 'text-[var(--hx-text-secondary)]' },
-              { label: 'Total', value: stats.total, color: 'text-black' },
+              { label: 'Total', value: stats.total, color: 'text-[var(--hx-text)]' },
             ].map((s) => (
               <div key={s.label} className="bg-[var(--hx-surface-secondary)] rounded-xl p-4">
                 <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
@@ -179,7 +179,7 @@ export default function SchedulerPage() {
               ) : (
                 <div className="grid grid-cols-7 gap-px bg-[var(--hx-surface-secondary)] rounded-lg overflow-hidden border border-[var(--hx-border-light)]">
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                    <div key={`pre-${i}`} className="bg-white min-h-24 p-1" />
+                    <div key={`pre-${i}`} className="bg-[var(--hx-surface)] min-h-24 p-1" />
                   ))}
 
                   {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -192,7 +192,7 @@ export default function SchedulerPage() {
                       <div
                         key={day}
                         onClick={() => setSelectedDay(isSelected ? null : day)}
-                        className={`bg-white min-h-24 p-1.5 cursor-pointer transition-colors ${
+                        className={`bg-[var(--hx-surface)] min-h-24 p-1.5 cursor-pointer transition-colors ${
                           isSelected ? 'ring-2 ring-black ring-inset' : 'hover:bg-[var(--hx-surface-secondary)]'
                         }`}
                       >
@@ -223,7 +223,7 @@ export default function SchedulerPage() {
                     const remainder = totalCells % 7;
                     const trailing = remainder === 0 ? 0 : 7 - remainder;
                     return Array.from({ length: trailing }).map((_, i) => (
-                      <div key={`post-${i}`} className="bg-white min-h-24 p-1" />
+                      <div key={`post-${i}`} className="bg-[var(--hx-surface)] min-h-24 p-1" />
                     ));
                   })()}
                 </div>

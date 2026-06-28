@@ -69,34 +69,34 @@ export default function SchedulePostModal({ onClose, onScheduled }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-[var(--hx-surface)] rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-black">Schedule a Post</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-black text-xl">×</button>
+          <h2 className="text-lg font-bold text-[var(--hx-text)]">Schedule a Post</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-[var(--hx-text)] text-xl">×</button>
         </div>
 
         <div className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-lg text-neutral-800 text-sm">{error}</div>
+            <div className="p-3 bg-[var(--hx-surface-secondary)] border border-neutral-200 rounded-lg text-neutral-800 text-sm">{error}</div>
           )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
             <select value={platform} onChange={e => setPlatform(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black">
+              className="w-full border border-[var(--hx-border)] rounded-lg px-3 py-2 text-[var(--hx-text)]">
               <option value="linkedin">LinkedIn</option>
               <option value="instagram">Instagram</option>
             </select>
           </div>
 
-          <div className="border border-neutral-200 bg-neutral-50 rounded-lg p-4 space-y-3">
+          <div className="border border-neutral-200 bg-[var(--hx-surface-secondary)] rounded-lg p-4 space-y-3">
             <div className="text-sm font-semibold text-neutral-900">✨ Generate with AI</div>
             <input value={topic} onChange={e => setTopic(e.target.value)}
               placeholder="Topic (e.g. AI in sales prospecting)"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black text-sm" />
+              className="w-full border border-[var(--hx-border)] rounded-lg px-3 py-2 text-[var(--hx-text)] text-sm" />
             <div className="flex gap-2">
               <select value={tone} onChange={e => setTone(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-black text-sm">
+                className="border border-[var(--hx-border)] rounded-lg px-3 py-2 text-[var(--hx-text)] text-sm">
                 <option value="professional">Professional</option>
                 <option value="friendly">Friendly</option>
                 <option value="consultative">Consultative</option>
@@ -113,7 +113,7 @@ export default function SchedulePostModal({ onClose, onScheduled }: Props) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Post content</label>
             <textarea value={content} onChange={e => setContent(e.target.value)} rows={6}
               placeholder="Write your post or generate it with AI above…"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black text-sm" />
+              className="w-full border border-[var(--hx-border)] rounded-lg px-3 py-2 text-[var(--hx-text)] text-sm" />
           </div>
 
           {platform === 'instagram' && (
@@ -121,14 +121,14 @@ export default function SchedulePostModal({ onClose, onScheduled }: Props) {
               <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (required for Instagram)</label>
               <input value={imageUrl} onChange={e => setImageUrl(e.target.value)}
                 placeholder="https://example.com/image.jpg"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black text-sm" />
+                className="w-full border border-[var(--hx-border)] rounded-lg px-3 py-2 text-[var(--hx-text)] text-sm" />
             </div>
           )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Publish at</label>
             <input type="datetime-local" value={scheduledFor} onChange={e => setScheduledFor(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black text-sm" />
+              className="w-full border border-[var(--hx-border)] rounded-lg px-3 py-2 text-[var(--hx-text)] text-sm" />
           </div>
 
           <button onClick={schedule} disabled={saving}

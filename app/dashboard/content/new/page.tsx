@@ -138,7 +138,7 @@ export default function NewContentPage() {
                   className={`p-4 border-2 rounded-lg text-center transition-colors ${
                     formData.type === type.value
                       ? 'border-black hx-btn-primary'
-                      : 'border-[var(--hx-border)] bg-white text-[var(--hx-text)] hover:border-gray-400'
+                      : 'border-[var(--hx-border)] bg-[var(--hx-surface)] text-[var(--hx-text)] hover:border-gray-400'
                   }`}
                 >
                   <div className="text-2xl mb-2">{type.icon}</div>

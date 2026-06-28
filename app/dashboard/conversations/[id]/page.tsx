@@ -149,7 +149,7 @@ export default function ConversationDetailPage() {
   const initials = lead ? `${lead.firstName?.[0] || ''}${lead.lastName?.[0] || ''}` : '?';
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-screen bg-[var(--hx-surface)] overflow-hidden">
       {/* Left sidebar — lead info + AI suggestions */}
       <div className="w-72 border-r border-[var(--hx-border)] flex flex-col shrink-0">
         {/* Lead header */}
