@@ -6,11 +6,24 @@ import { logger } from '@/lib/logger';
  * Instagram integration via "Instagram API with Instagram Login" (Business accounts).
  * - OAuth: instagram.com/oauth/authorize → api.instagram.com/oauth/access_token
  *   → exchanged for a 60-day long-lived token (graph.instagram.com).
- * - Publishing: POST /{ig-user-id}/media → /{ig-user-id}/media_publish
+ * - Publishing: POST /{ig-user-id}/media → poll status → /{ig-user-id}/media_publish
  *   (requires an image/video URL; Instagram does not allow text-only posts).
  */
 
 const GRAPH = 'https://graph.instagram.com/v21.0';
+
+const SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+
+export class InstagramPublishError extends Error {
+  readonly temporary: boolean;
+  readonly metaStatusCode: number;
+  constructor(message: string, statusCode: number, temporary: boolean) {
+    super(message);
+    this.name = 'InstagramPublishError';
+    this.temporary = temporary;
+    this.metaStatusCode = statusCode;
+  }
+}
 
 export class InstagramService {
   // ---------- OAuth ----------
@@ -40,7 +53,6 @@ export class InstagramService {
     if (!res.ok) throw new Error(`Instagram token exchange failed: ${await res.text()}`);
     const shortLived = await res.json();
 
-    // Exchange for long-lived (60-day) token
     const llRes = await fetch(
       `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${process.env.INSTAGRAM_CLIENT_SECRET}&access_token=${shortLived.access_token}`
     );
@@ -113,7 +125,6 @@ export class InstagramService {
       igUserId = row.scope?.replace('ig_user_id:', '') || 'me';
     }
 
-    // Refresh long-lived token if older than 30 days remaining window
     if (row.expiresAt && row.expiresAt.getTime() < Date.now() + 7 * 24 * 3600 * 1000) {
       try {
         const res = await fetch(
@@ -169,20 +180,24 @@ export class InstagramService {
     return { mediaCount: media?.data?.length ?? 0, recentMedia: media?.data ?? [] };
   }
 
-  // ---------- Publishing ----------
-  // ---------- Validation (Phase 7) ----------
+  // ---------- Validation ----------
   static validateMedia(imageUrl: string, caption: string): string | null {
     if (!imageUrl) return 'Instagram requires an image URL.';
     if (caption.length > 2200) return 'Caption exceeds 2200 character limit.';
-    const ext = imageUrl.split('?')[0].split('.').pop()?.toLowerCase();
-    if (ext && !['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
-      return `Unsupported image format: .${ext}. Use JPEG, PNG, or WebP.`;
+    const pathPart = imageUrl.split('?')[0];
+    const lastSegment = pathPart.split('/').pop() || '';
+    const dotIndex = lastSegment.lastIndexOf('.');
+    if (dotIndex > 0) {
+      const ext = lastSegment.slice(dotIndex + 1).toLowerCase();
+      if (!SUPPORTED_IMAGE_EXTENSIONS.includes(ext)) {
+        return `Unsupported image format: .${ext}. Use JPEG, PNG, or WebP.`;
+      }
     }
     return null;
   }
 
-  // ---------- Graph API error classification (Phase 4) ----------
-  private static isTemporaryError(statusCode: number, errorBody: string): boolean {
+  // ---------- Graph API error classification ----------
+  static isTemporaryError(statusCode: number, errorBody: string): boolean {
     if (statusCode === 429 || statusCode >= 500) return true;
     try {
       const parsed = JSON.parse(errorBody);
@@ -219,13 +234,11 @@ export class InstagramService {
       logger.error('Instagram media container creation failed', {
         subsystem: 'instagram', userId, status: createRes.status, temporary, duration: Date.now() - startTime,
       });
-      const err: any = new Error(`Instagram media creation failed (${createRes.status})`);
-      err.temporary = temporary;
-      throw err;
+      throw new InstagramPublishError(`Instagram media creation failed (${createRes.status})`, createRes.status, temporary);
     }
     const container = await createRes.json();
 
-    // Step 2: Poll container status (Instagram processes the image asynchronously)
+    // Step 2: Poll container status
     let containerReady = false;
     for (let attempt = 0; attempt < 10; attempt++) {
       const statusRes = await fetch(`${GRAPH}/${container.id}?fields=status_code,status&access_token=${token}`);
@@ -234,13 +247,14 @@ export class InstagramService {
         if (statusData.status_code === 'FINISHED') { containerReady = true; break; }
         if (statusData.status_code === 'ERROR') {
           logger.error('Instagram container processing failed', { subsystem: 'instagram', userId, containerId: container.id });
-          throw new Error('Instagram rejected the media. Check image URL and format.');
+          throw new InstagramPublishError('Instagram rejected the media. Check image URL and format.', 400, false);
         }
       }
       await new Promise(r => setTimeout(r, 2000));
     }
     if (!containerReady) {
       logger.warn('Instagram container processing timeout', { subsystem: 'instagram', userId, containerId: container.id });
+      throw new InstagramPublishError('Instagram media processing timed out. Will retry.', 408, true);
     }
 
     // Step 3: Publish
@@ -255,9 +269,7 @@ export class InstagramService {
       logger.error('Instagram publish failed', {
         subsystem: 'instagram', userId, status: publishRes.status, temporary, containerId: container.id, duration: Date.now() - startTime,
       });
-      const err: any = new Error(`Instagram publish failed (${publishRes.status})`);
-      err.temporary = temporary;
-      throw err;
+      throw new InstagramPublishError(`Instagram publish failed (${publishRes.status})`, publishRes.status, temporary);
     }
     const published = await publishRes.json();
 

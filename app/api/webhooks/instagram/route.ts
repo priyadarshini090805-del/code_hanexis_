@@ -80,12 +80,12 @@ export async function POST(request: NextRequest) {
       } else if (activeIntegrations.length === 0) {
         return NextResponse.json({ ok: true });
       } else {
-        console.warn('Instagram webhook: multiple active integrations, cannot resolve tenant. Storing raw event only.');
+        logger.warn('Instagram webhook: multiple active integrations, cannot resolve tenant', { subsystem: 'webhook', provider: 'instagram' });
         await prisma.webhookEvent.create({
           data: {
             integrationId: activeIntegrations[0].id,
             eventType: event.object || 'INSTAGRAM_EVENT_UNRESOLVED',
-            payload: body.slice(0, 60000),
+            payload: `${payloadHash}:${body.slice(0, 59967)}`,
           },
         });
         return NextResponse.json({ success: true, note: 'event stored, tenant ambiguous' });

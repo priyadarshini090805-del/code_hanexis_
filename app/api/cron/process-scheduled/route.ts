@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { LinkedInService } from '@/lib/services/linkedin.service';
-import { InstagramService } from '@/lib/services/instagram.service';
+import { InstagramService, InstagramPublishError } from '@/lib/services/instagram.service';
 import { NotificationService } from '@/lib/services/notification.service';
 import { WorkflowRuntimeService } from '@/lib/services/workflow-runtime.service';
 import { logger } from '@/lib/logger';
@@ -55,7 +55,12 @@ export async function GET(request: NextRequest) {
 
       await prisma.scheduledContent.update({
         where: { id: item.id },
-        data: { status: 'PUBLISHED' as any, publishedAt: new Date(), failureReason: null },
+        data: {
+          status: 'PUBLISHED' as any,
+          publishedAt: new Date(),
+          failureReason: null,
+          metadata: { postRef, platform: item.platform, publishedAt: new Date().toISOString() },
+        },
       });
       await NotificationService.create(item.userId, {
         type: 'POST_PUBLISHED',
@@ -69,9 +74,9 @@ export async function GET(request: NextRequest) {
       const attempts = await prisma.publishingQueue.count({
         where: { scheduledContentId: item.id, status: 'failed' },
       });
-      const isTemporary = (e as any).temporary === true;
+      const isTemporary = e instanceof InstagramPublishError ? e.temporary : false;
       const willRetry = isTemporary && attempts < 2;
-      const backoffMs = willRetry ? (attempts + 1) * 5 * 60 * 1000 : 0;
+      const backoffMs = willRetry ? Math.pow(2, attempts) * 5 * 60 * 1000 : 0;
       await prisma.publishingQueue.create({
         data: {
           scheduledContentId: item.id,

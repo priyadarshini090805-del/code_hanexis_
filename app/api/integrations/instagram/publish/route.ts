@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { successResponse, errorResponse } from '@/lib/response';
-import { InstagramService } from '@/lib/services/instagram.service';
+import { InstagramService, InstagramPublishError } from '@/lib/services/instagram.service';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
 
@@ -47,11 +47,16 @@ export async function POST(request: NextRequest) {
     }
 
     return successResponse({ postId: result }, schedule ? 'Post scheduled' : 'Post published');
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return errorResponse('Validation error', error.errors, 400);
     }
-    logger.error('Instagram publish route error', { subsystem: 'instagram', error: error.message });
+    if (error instanceof InstagramPublishError) {
+      logger.error('Instagram publish route error', { subsystem: 'instagram', status: error.metaStatusCode, temporary: error.temporary });
+      return errorResponse(error.message, error.temporary ? 503 : 400);
+    }
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Instagram publish route error', { subsystem: 'instagram', error: message });
     return errorResponse('An unexpected error occurred', 500);
   }
 }
