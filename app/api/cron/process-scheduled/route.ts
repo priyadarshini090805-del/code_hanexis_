@@ -4,6 +4,7 @@ import { LinkedInService } from '@/lib/services/linkedin.service';
 import { InstagramService } from '@/lib/services/instagram.service';
 import { NotificationService } from '@/lib/services/notification.service';
 import { WorkflowRuntimeService } from '@/lib/services/workflow-runtime.service';
+import { logger } from '@/lib/logger';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
@@ -99,9 +100,11 @@ export async function GET(request: NextRequest) {
 
   // Advance durable workflow executions on the same tick.
   const workflow = await WorkflowRuntimeService.tick().catch((e) => {
-    console.error('Workflow engine error:', e);
+    logger.error('Workflow engine tick failed', { subsystem: 'cron', operation: 'workflow-tick', error: e.message });
     return [];
   });
+
+  logger.info('Cron tick completed', { subsystem: 'cron', operation: 'process-scheduled', published: results.length, workflows: workflow.length });
 
   return NextResponse.json({
     processed: results.length,

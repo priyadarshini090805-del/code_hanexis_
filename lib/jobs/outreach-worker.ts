@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
 import { ConversationService } from '@/lib/services/conversation.service';
 import { fromJsonField } from '@/lib/json-field';
+import { logger } from '@/lib/logger';
 
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 5 * 60 * 1000;
@@ -62,6 +63,7 @@ export async function processOutreachQueue(limit = 25): Promise<any[]> {
         },
       });
       if (!willRetry) {
+        logger.error('Outreach job permanently failed', { subsystem: 'queue', jobId: job.id, jobType: job.jobType, attempts: attempts, error: e.message });
         await markCampaignLeadFailed(job.jobType, job.payload, e.message).catch(() => null);
       }
       results.push({ id: job.id, jobType: job.jobType, status: willRetry ? 'retry' : 'failed', error: e.message });

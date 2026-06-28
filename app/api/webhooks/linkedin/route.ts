@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { NotificationService } from '@/lib/services/notification.service';
+import { logger } from '@/lib/logger';
 
 /**
  * LinkedIn webhook — receives Lead Gen Form notifications and engagement events.
@@ -30,10 +31,11 @@ export async function POST(request: NextRequest) {
       const sigBuf = Buffer.from(sigValue);
       const expBuf = Buffer.from(expected);
       if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+        logger.warn('LinkedIn webhook signature mismatch', { subsystem: 'webhook', provider: 'linkedin' });
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
     } else if (process.env.NODE_ENV === 'production') {
-      console.error('LINKEDIN_WEBHOOK_SECRET not set — rejecting webhook in production');
+      logger.error('LINKEDIN_WEBHOOK_SECRET not set — rejecting in production', { subsystem: 'webhook', provider: 'linkedin' });
       return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
     }
 

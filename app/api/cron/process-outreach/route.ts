@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processOutreachQueue } from '@/lib/jobs/outreach-worker';
+import { logger } from '@/lib/logger';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
@@ -16,5 +17,6 @@ export async function GET(request: NextRequest) {
   }
 
   const results = await processOutreachQueue();
+  logger.info('Outreach queue processed', { subsystem: 'cron', operation: 'process-outreach', processed: results.length });
   return NextResponse.json({ processed: results.length, results, at: new Date().toISOString() });
 }

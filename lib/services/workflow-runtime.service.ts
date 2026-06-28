@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { addOutreachJob } from '@/lib/queue';
+import { logger } from '@/lib/logger';
 
 /**
  * Durable, database-driven workflow engine.
@@ -56,6 +57,7 @@ export class WorkflowRuntimeService {
       try {
         results.push(await this.advanceOne(exec));
       } catch (e: any) {
+        logger.error('Workflow execution failed', { subsystem: 'workflow', executionId: exec.id, workflowId: exec.workflowId, error: e.message });
         await prisma.workflowExecution.update({
           where: { id: exec.id },
           data: { status: 'FAILED', error: (e.message || 'error').slice(0, 900) },

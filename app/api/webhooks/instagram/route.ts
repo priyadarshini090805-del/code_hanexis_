@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { NotificationService } from '@/lib/services/notification.service';
+import { logger } from '@/lib/logger';
 
 /** Instagram webhook: verification (GET) + comments/messages → leads (POST). */
 export async function GET(request: NextRequest) {
@@ -28,10 +29,11 @@ export async function POST(request: NextRequest) {
       const sigBuf = Buffer.from(signature || '');
       const expBuf = Buffer.from(expected);
       if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+        logger.warn('Instagram webhook signature mismatch', { subsystem: 'webhook', provider: 'instagram' });
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
     } else if (process.env.NODE_ENV === 'production') {
-      console.error('INSTAGRAM_CLIENT_SECRET not set — rejecting webhook in production');
+      logger.error('INSTAGRAM_CLIENT_SECRET not set — rejecting in production', { subsystem: 'webhook', provider: 'instagram' });
       return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
     }
 
