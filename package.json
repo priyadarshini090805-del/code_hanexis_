@@ -25,6 +25,9 @@
   "dependencies": {
     "@auth/prisma-adapter": "^1.4.0",
     "@prisma/client": "^5.8.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@types/three": "^0.185.0",
     "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
@@ -44,6 +47,7 @@
     "redis": "^4.6.11",
     "resend": "^3.0.0",
     "tailwind-merge": "^2.2.0",
+    "three": "^0.185.0",
     "twilio": "^4.10.2",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"
