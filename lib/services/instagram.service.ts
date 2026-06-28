@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { CryptoService } from '@/lib/services/crypto.service';
+import { logger } from '@/lib/logger';
 
 /**
  * Instagram integration via "Instagram API with Instagram Login" (Business accounts).
@@ -55,6 +56,7 @@ export class InstagramService {
 
   static async saveConnection(userId: string, tokens: { accessToken: string; expiresIn: number; igUserId: string }) {
     const profile = await this.fetchProfile(tokens.accessToken);
+    const accountType = profile.account_type || 'BUSINESS';
     const integration = await prisma.integration.upsert({
       where: { userId_provider: { userId, provider: 'INSTAGRAM' } },
       update: {
@@ -76,14 +78,20 @@ export class InstagramService {
       },
     });
     await prisma.integrationToken.deleteMany({ where: { integrationId: integration.id } });
+    const tokenMeta = JSON.stringify({
+      igUserId: tokens.igUserId,
+      accountType,
+      profilePicture: profile.profile_picture_url || null,
+    });
     await prisma.integrationToken.create({
       data: {
         integrationId: integration.id,
         accessToken: CryptoService.encrypt(tokens.accessToken),
         expiresAt: new Date(Date.now() + tokens.expiresIn * 1000),
-        scope: `ig_user_id:${tokens.igUserId}`,
+        scope: tokenMeta,
       },
     });
+    logger.info('Instagram connected', { subsystem: 'instagram', userId, username: profile.username, accountType });
     return integration;
   }
 
@@ -97,7 +105,13 @@ export class InstagramService {
     }
     const row = integration.tokens[0];
     let token = CryptoService.decrypt(row.accessToken);
-    const igUserId = row.scope?.replace('ig_user_id:', '') || 'me';
+    let igUserId = 'me';
+    try {
+      const meta = JSON.parse(row.scope || '{}');
+      igUserId = meta.igUserId || 'me';
+    } catch {
+      igUserId = row.scope?.replace('ig_user_id:', '') || 'me';
+    }
 
     // Refresh long-lived token if older than 30 days remaining window
     if (row.expiresAt && row.expiresAt.getTime() < Date.now() + 7 * 24 * 3600 * 1000) {
@@ -122,8 +136,13 @@ export class InstagramService {
   }
 
   // ---------- Profile / media ----------
-  static async fetchProfile(accessToken: string): Promise<{ user_id: string; username: string }> {
-    const res = await fetch(`${GRAPH}/me?fields=user_id,username,account_type&access_token=${accessToken}`);
+  static async fetchProfile(accessToken: string): Promise<{
+    user_id: string;
+    username: string;
+    account_type?: string;
+    profile_picture_url?: string;
+  }> {
+    const res = await fetch(`${GRAPH}/me?fields=user_id,username,account_type,profile_picture_url&access_token=${accessToken}`);
     if (!res.ok) throw new Error(`Instagram profile fetch failed: ${await res.text()}`);
     return res.json();
   }
@@ -151,6 +170,28 @@ export class InstagramService {
   }
 
   // ---------- Publishing ----------
+  // ---------- Validation (Phase 7) ----------
+  static validateMedia(imageUrl: string, caption: string): string | null {
+    if (!imageUrl) return 'Instagram requires an image URL.';
+    if (caption.length > 2200) return 'Caption exceeds 2200 character limit.';
+    const ext = imageUrl.split('?')[0].split('.').pop()?.toLowerCase();
+    if (ext && !['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+      return `Unsupported image format: .${ext}. Use JPEG, PNG, or WebP.`;
+    }
+    return null;
+  }
+
+  // ---------- Graph API error classification (Phase 4) ----------
+  private static isTemporaryError(statusCode: number, errorBody: string): boolean {
+    if (statusCode === 429 || statusCode >= 500) return true;
+    try {
+      const parsed = JSON.parse(errorBody);
+      const code = parsed?.error?.code;
+      if ([1, 2, 4, 17, 341].includes(code)) return true;
+    } catch { /* non-JSON error */ }
+    return false;
+  }
+
   /** Publish an image post. Instagram requires a publicly accessible image URL. */
   static async publishPost(
     userId: string,
@@ -159,27 +200,70 @@ export class InstagramService {
     imageUrl?: string,
     hashtags?: string[]
   ): Promise<string> {
-    if (!imageUrl) {
-      throw new Error('Instagram requires an image. Provide an image URL to publish.');
-    }
+    const startTime = Date.now();
+    const validationError = this.validateMedia(imageUrl || '', caption);
+    if (validationError) throw new Error(validationError);
+
     const { token, igUserId } = await this.getValidAccessToken(userId);
     const fullCaption = hashtags?.length ? `${caption}\n\n${hashtags.map(h => (h.startsWith('#') ? h : `#${h}`)).join(' ')}` : caption;
 
+    // Step 1: Create media container
     const createRes = await fetch(`${GRAPH}/${igUserId}/media`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ image_url: imageUrl, caption: fullCaption, access_token: token }),
+      body: new URLSearchParams({ image_url: imageUrl!, caption: fullCaption, access_token: token }),
     });
-    if (!createRes.ok) throw new Error(`Instagram media creation failed: ${await createRes.text()}`);
+    if (!createRes.ok) {
+      const errBody = await createRes.text();
+      const temporary = this.isTemporaryError(createRes.status, errBody);
+      logger.error('Instagram media container creation failed', {
+        subsystem: 'instagram', userId, status: createRes.status, temporary, duration: Date.now() - startTime,
+      });
+      const err: any = new Error(`Instagram media creation failed (${createRes.status})`);
+      err.temporary = temporary;
+      throw err;
+    }
     const container = await createRes.json();
 
+    // Step 2: Poll container status (Instagram processes the image asynchronously)
+    let containerReady = false;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const statusRes = await fetch(`${GRAPH}/${container.id}?fields=status_code,status&access_token=${token}`);
+      if (statusRes.ok) {
+        const statusData = await statusRes.json();
+        if (statusData.status_code === 'FINISHED') { containerReady = true; break; }
+        if (statusData.status_code === 'ERROR') {
+          logger.error('Instagram container processing failed', { subsystem: 'instagram', userId, containerId: container.id });
+          throw new Error('Instagram rejected the media. Check image URL and format.');
+        }
+      }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+    if (!containerReady) {
+      logger.warn('Instagram container processing timeout', { subsystem: 'instagram', userId, containerId: container.id });
+    }
+
+    // Step 3: Publish
     const publishRes = await fetch(`${GRAPH}/${igUserId}/media_publish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ creation_id: container.id, access_token: token }),
     });
-    if (!publishRes.ok) throw new Error(`Instagram publish failed: ${await publishRes.text()}`);
+    if (!publishRes.ok) {
+      const errBody = await publishRes.text();
+      const temporary = this.isTemporaryError(publishRes.status, errBody);
+      logger.error('Instagram publish failed', {
+        subsystem: 'instagram', userId, status: publishRes.status, temporary, containerId: container.id, duration: Date.now() - startTime,
+      });
+      const err: any = new Error(`Instagram publish failed (${publishRes.status})`);
+      err.temporary = temporary;
+      throw err;
+    }
     const published = await publishRes.json();
+
+    logger.info('Instagram post published', {
+      subsystem: 'instagram', userId, postId: published.id, duration: Date.now() - startTime,
+    });
     return published.id;
   }
 
@@ -196,6 +280,32 @@ export class InstagramService {
       },
     });
     return scheduled.id;
+  }
+
+  static async getConnectionStatus(userId: string) {
+    const integration = await prisma.integration.findUnique({
+      where: { userId_provider: { userId, provider: 'INSTAGRAM' } },
+      include: { tokens: { orderBy: { createdAt: 'desc' }, take: 1 } },
+    });
+    if (!integration) return { connected: false };
+
+    const row = integration.tokens[0];
+    let meta = { igUserId: '', accountType: 'BUSINESS', profilePicture: null as string | null };
+    if (row?.scope) {
+      try { meta = { ...meta, ...JSON.parse(row.scope) }; } catch { /* legacy format */ }
+    }
+
+    return {
+      connected: integration.status === 'ACTIVE',
+      status: integration.status,
+      username: integration.profileName,
+      profileUrl: integration.profileUrl,
+      profilePicture: meta.profilePicture,
+      accountType: meta.accountType,
+      tokenExpiresAt: row?.expiresAt?.toISOString() || null,
+      connectedAt: integration.connectedAt?.toISOString() || null,
+      lastSyncAt: integration.lastSyncAt?.toISOString() || null,
+    };
   }
 
   static async disconnect(userId: string) {

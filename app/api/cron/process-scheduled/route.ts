@@ -69,7 +69,9 @@ export async function GET(request: NextRequest) {
       const attempts = await prisma.publishingQueue.count({
         where: { scheduledContentId: item.id, status: 'failed' },
       });
-      const willRetry = attempts < 2;
+      const isTemporary = (e as any).temporary === true;
+      const willRetry = isTemporary && attempts < 2;
+      const backoffMs = willRetry ? (attempts + 1) * 5 * 60 * 1000 : 0;
       await prisma.publishingQueue.create({
         data: {
           scheduledContentId: item.id,
@@ -80,10 +82,13 @@ export async function GET(request: NextRequest) {
           errorMessage: e.message?.slice(0, 900),
         },
       });
+      logger.error('Scheduled content publish failed', {
+        subsystem: 'scheduler', itemId: item.id, platform: item.platform, attempt: attempts + 1, temporary: isTemporary, willRetry,
+      });
       await prisma.scheduledContent.update({
         where: { id: item.id },
         data: willRetry
-          ? { status: 'SCHEDULED' as any, scheduledFor: new Date(Date.now() + 5 * 60 * 1000), failureReason: e.message?.slice(0, 500) }
+          ? { status: 'SCHEDULED' as any, scheduledFor: new Date(Date.now() + backoffMs), failureReason: e.message?.slice(0, 500) }
           : { status: 'FAILED' as any, failureReason: e.message?.slice(0, 500) },
       });
       if (!willRetry) {

@@ -39,6 +39,17 @@ export async function POST(request: NextRequest) {
 
     const event = JSON.parse(body || '{}');
 
+    // Duplicate delivery detection: hash the payload and check recent events
+    const payloadHash = crypto.createHash('sha256').update(body).digest('hex').slice(0, 32);
+    const recentDupe = await prisma.webhookEvent.findFirst({
+      where: { eventType: { startsWith: 'INSTAGRAM' }, payload: { startsWith: payloadHash } },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (recentDupe && recentDupe.createdAt.getTime() > Date.now() - 5 * 60 * 1000) {
+      logger.info('Instagram webhook duplicate skipped', { subsystem: 'webhook', hash: payloadHash });
+      return NextResponse.json({ success: true, note: 'duplicate' });
+    }
+
     // Tenant resolution: try to match the Instagram page/account ID from
     // the event to a specific integration. Fall back to single-integration
     // shortcut only when unambiguous.
@@ -85,7 +96,7 @@ export async function POST(request: NextRequest) {
       data: {
         integrationId: integration.id,
         eventType: event.object || 'INSTAGRAM_EVENT',
-        payload: body.slice(0, 60000),
+        payload: `${payloadHash}:${body.slice(0, 59967)}`,
       },
     });
 
