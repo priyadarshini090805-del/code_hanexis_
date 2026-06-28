@@ -31,9 +31,7 @@ export default function QueueMonitorPage() {
 
   const fetchQueues = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch('/api/queue/metrics', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch queue metrics');

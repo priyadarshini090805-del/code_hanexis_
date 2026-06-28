@@ -30,11 +30,7 @@ export default function NotificationBell() {
 
   const load = useCallback(async () => {
     try {
-      const token = 'cookie';
-      if (!token) return;
-      const res = await fetch('/api/notifications', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch('/api/notifications');
       if (!res.ok) return;
       const data = await res.json();
       setItems(data.data?.items || []);
@@ -57,19 +53,15 @@ export default function NotificationBell() {
   }, []);
 
   const markAllRead = async () => {
-    const token = 'cookie';
     await fetch('/api/notifications', {
       method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
     });
     load();
   };
 
   const openItem = async (n: Notification) => {
-    const token = 'cookie';
     fetch(`/api/notifications/${n.id}`, {
       method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
     }).then(load);
     setOpen(false);
     if (n.link) router.push(n.link);

@@ -28,17 +28,11 @@ export default function NewLeadPage() {
       setLoading(true)
       setError(null)
 
-      const token = 'cookie'
-      if (!token) {
-        router.push('/login')
-        return
-      }
 
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       })

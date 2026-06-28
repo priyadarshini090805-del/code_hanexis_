@@ -42,12 +42,10 @@ export default function ContentEditorPage() {
 
     try {
       setAiLoading(true);
-      const token = 'cookie';
       const response = await fetch('/api/content/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: formData.type,
@@ -76,12 +74,10 @@ export default function ContentEditorPage() {
 
     try {
       setSaving(true);
-      const token = 'cookie';
       const response = await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           title: formData.title,

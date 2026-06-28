@@ -45,13 +45,11 @@ export default function NewContentPage() {
     try {
       setLoading(true);
       setError('');
-      const token = 'cookie';
 
       const response = await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -79,7 +77,6 @@ export default function NewContentPage() {
     try {
       setGenerating(true);
       setError('');
-      const token = 'cookie';
 
       const prompt = aiPrompts[formData.type].replace('{{topic}}', aiInput).replace('{{position}}', aiInput);
 
@@ -87,7 +84,6 @@ export default function NewContentPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           leadId: 'system', // Fake lead ID for content generation

@@ -39,9 +39,7 @@ export default function NewCampaignPage() {
 
   const fetchLeads = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch('/api/leads', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch leads');
@@ -56,9 +54,7 @@ export default function NewCampaignPage() {
 
   const fetchWorkflows = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch('/api/workflows', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch workflows');
@@ -84,12 +80,10 @@ export default function NewCampaignPage() {
 
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch('/api/campaigns', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           ...formData,

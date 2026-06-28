@@ -26,9 +26,7 @@ export default function ContentPage() {
   const fetchContents = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch('/api/content', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch content');
@@ -48,10 +46,8 @@ export default function ContentPage() {
     if (!confirm('Are you sure?')) return;
 
     try {
-      const token = 'cookie';
       const response = await fetch(`/api/content/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to delete');

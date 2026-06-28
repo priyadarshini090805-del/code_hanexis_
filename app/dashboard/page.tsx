@@ -24,9 +24,7 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch('/api/dashboard', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to load dashboard');

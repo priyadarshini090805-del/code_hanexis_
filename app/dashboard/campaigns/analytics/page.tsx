@@ -38,10 +38,8 @@ function CampaignAnalyticsPage() {
   const fetchMetrics = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(
         `/api/campaigns/${campaignId}/analytics?period=${period}`,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (!response.ok) throw new Error('Failed to fetch metrics');

@@ -32,9 +32,7 @@ export default function CampaignDetailPage() {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(`/api/campaigns/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Campaign not found');
@@ -42,7 +40,6 @@ export default function CampaignDetailPage() {
       setCampaign(data.data);
 
       const statsResponse = await fetch(`/api/campaigns/${id}/stats`, {
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();

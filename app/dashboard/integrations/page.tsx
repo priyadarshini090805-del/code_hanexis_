@@ -53,9 +53,7 @@ export default function IntegrationsPage() {
   const fetchIntegrations = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch('/api/integrations', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch integrations');
@@ -75,10 +73,8 @@ export default function IntegrationsPage() {
   const disconnectIntegration = async (id: string) => {
     if (!confirm('Disconnect this integration?')) return;
     try {
-      const token = 'cookie';
       const response = await fetch(`/api/integrations/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error('Failed to disconnect');
       setIntegrations(integrations.filter(i => i.id !== id));
@@ -88,9 +84,8 @@ export default function IntegrationsPage() {
   };
 
   const handleConnect = (providerId: string) => {
-    const token = 'cookie';
     const path = providerId.toLowerCase();
-    window.location.href = `/api/integrations/${path}/authorize?token=${encodeURIComponent(token)}`;
+    window.location.href = `/api/integrations/${path}/authorize`;
   };
 
   const formatDate = (date: string | undefined) => {

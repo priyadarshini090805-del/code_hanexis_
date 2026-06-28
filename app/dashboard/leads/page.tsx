@@ -28,13 +28,11 @@ export default function LeadsPage() {
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const url = new URL('/api/leads', window.location.origin);
       if (filter !== 'ALL') url.searchParams.set('status', filter);
       if (searchQuery) url.searchParams.set('search', searchQuery);
 
       const response = await fetch(url.toString(), {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch leads');

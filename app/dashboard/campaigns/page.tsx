@@ -27,10 +27,8 @@ export default function CampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(
         `/api/campaigns${filter !== 'ALL' ? `?status=${filter}` : ''}`,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (!response.ok) throw new Error('Failed to fetch campaigns');
@@ -60,12 +58,10 @@ export default function CampaignsPage() {
 
   const handleAction = async (campaignId: string, action: string) => {
     try {
-      const token = 'cookie';
       const response = await fetch(`/api/campaigns/${campaignId}/actions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ action }),
       });

@@ -26,10 +26,8 @@ export default function AuditPage() {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(
         `/api/audit/logs${filter !== 'ALL' ? `?action=${filter}` : ''}`,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (!response.ok) throw new Error('Failed to fetch audit logs');

@@ -22,10 +22,8 @@ export default function SchedulePostModal({ onClose, onScheduled }: Props) {
     if (!topic.trim()) { setError('Enter a topic for AI generation'); return; }
     setGenerating(true); setError('');
     try {
-      const token = 'cookie';
       const res = await fetch('/api/content/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           type: platform === 'instagram' ? 'INSTAGRAM_CAPTION' : 'LINKEDIN_POST',
           topic,
@@ -47,10 +45,8 @@ export default function SchedulePostModal({ onClose, onScheduled }: Props) {
     if (platform === 'instagram' && !imageUrl.trim()) { setError('Instagram posts require an image URL'); return; }
     setSaving(true); setError('');
     try {
-      const token = 'cookie';
       const res = await fetch('/api/scheduler', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           platform,
           content,

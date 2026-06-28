@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 interface GenerationRequest {
   leadId: string
@@ -43,7 +43,6 @@ interface HistoryItem {
 }
 
 function AIPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const leadId = searchParams.get('leadId')
 
@@ -101,14 +100,8 @@ function AIPage() {
 
   async function fetchUsage() {
     try {
-      const token = 'cookie'
-      if (!token) {
-        router.push('/login')
-        return
-      }
 
       const response = await fetch('/api/ai/generate-message', {
-        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!response.ok) throw new Error('Failed to fetch usage')
@@ -129,17 +122,11 @@ function AIPage() {
       setError(null)
       setResult(null)
 
-      const token = 'cookie'
-      if (!token) {
-        router.push('/login')
-        return
-      }
 
       const response = await fetch('/api/ai/generate-message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       })

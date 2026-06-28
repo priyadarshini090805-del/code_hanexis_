@@ -30,9 +30,7 @@ export default function ConversationsPage() {
   const fetchConversations = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch('/api/conversations', {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch conversations');

@@ -41,9 +41,7 @@ export default function WorkflowDetailPage() {
   const fetchWorkflow = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(`/api/workflows/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Workflow not found');
@@ -63,12 +61,10 @@ export default function WorkflowDetailPage() {
 
   const handleSave = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch(`/api/workflows/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });

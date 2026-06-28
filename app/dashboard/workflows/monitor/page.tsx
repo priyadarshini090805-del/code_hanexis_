@@ -34,10 +34,8 @@ export default function WorkflowMonitorPage() {
 
   const fetchExecutions = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch(
         `/api/workflows/executions?status=${filter === 'ALL' ? '' : filter}`,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (!response.ok) throw new Error('Failed to fetch executions');

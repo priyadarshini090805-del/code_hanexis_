@@ -1,11 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LinkedInManagementPage() {
-  const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
   const [connections, setConnections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,17 +18,10 @@ export default function LinkedInManagementPage() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
-      if (!token) {
-        router.push('/login');
-        return;
-      }
-
       const response = await fetch('/api/integrations/linkedin/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
           'x-linkedin-token': localStorage.getItem('linkedinToken') || '',
         },
         body: JSON.stringify({ action: 'profile' }),
@@ -50,13 +41,11 @@ export default function LinkedInManagementPage() {
   const handleSyncConnections = async () => {
     try {
       setSyncInProgress(true);
-      const token = 'cookie';
       
       const response = await fetch('/api/integrations/linkedin/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
           'x-linkedin-token': localStorage.getItem('linkedinToken') || '',
         },
         body: JSON.stringify({ action: 'connections' }),

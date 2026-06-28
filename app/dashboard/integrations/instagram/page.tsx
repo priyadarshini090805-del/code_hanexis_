@@ -34,12 +34,10 @@ export default function InstagramPage() {
 
   const fetchProfile = async () => {
     try {
-      const token = 'cookie';
       const response = await fetch('/api/integrations/instagram/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ action: 'profile' }),
       });
@@ -55,10 +53,8 @@ export default function InstagramPage() {
   const fetchMetrics = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(
         `/api/integrations/instagram/analytics?period=${period}`,
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (!response.ok) throw new Error('Failed to fetch metrics');

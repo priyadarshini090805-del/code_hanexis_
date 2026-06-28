@@ -23,12 +23,10 @@ export default function NewWorkflowPage() {
 
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch('/api/workflows', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });

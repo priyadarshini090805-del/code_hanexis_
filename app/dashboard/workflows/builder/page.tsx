@@ -42,9 +42,7 @@ function WorkflowBuilderPage() {
   const fetchWorkflow = async () => {
     try {
       setLoading(true);
-      const token = 'cookie';
       const response = await fetch(`/api/workflows/${workflowId}`, {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Workflow not found');
@@ -61,12 +59,10 @@ function WorkflowBuilderPage() {
     if (!workflowId) return;
 
     try {
-      const token = 'cookie';
       const response = await fetch(`/api/workflows/${workflowId}/steps`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: newStepType,
@@ -87,10 +83,8 @@ function WorkflowBuilderPage() {
     if (!workflowId) return;
 
     try {
-      const token = 'cookie';
       const response = await fetch(`/api/workflows/${workflowId}/steps/${stepId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to delete step');
