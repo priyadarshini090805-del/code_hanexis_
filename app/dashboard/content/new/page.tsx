@@ -112,23 +112,23 @@ export default function NewContentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link href="/dashboard/content" className="text-gray-600 hover:text-black mb-4 inline-block">
+        <Link href="/dashboard/content" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)] mb-4 inline-block">
           ← Back to Content
         </Link>
 
-        <h1 className="text-3xl font-bold text-black mb-8">Create Content</h1>
+        <h1 className="text-3xl font-bold text-[var(--hx-text)] mb-8">Create Content</h1>
 
         {error && (
-          <div className="mb-6 p-4 bg-neutral-50 border border-neutral-200 rounded-lg text-neutral-800">
+          <div className="mb-6 p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg text-[var(--hx-text)]">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-black mb-3">Content Type *</label>
+            <label className="block text-sm font-medium text-[var(--hx-text)] mb-3">Content Type *</label>
             <div className="grid grid-cols-3 gap-3">
               {contentTypes.map(type => (
                 <button
@@ -137,8 +137,8 @@ export default function NewContentPage() {
                   onClick={() => setFormData({ ...formData, type: type.value as any })}
                   className={`p-4 border-2 rounded-lg text-center transition-colors ${
                     formData.type === type.value
-                      ? 'border-black bg-black text-white'
-                      : 'border-gray-300 bg-white text-black hover:border-gray-400'
+                      ? 'border-black hx-btn-primary'
+                      : 'border-[var(--hx-border)] bg-white text-[var(--hx-text)] hover:border-gray-400'
                   }`}
                 >
                   <div className="text-2xl mb-2">{type.icon}</div>
@@ -149,23 +149,23 @@ export default function NewContentPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-black mb-2">Title *</label>
+            <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Title *</label>
             <input
               type="text"
               value={formData.title}
               onChange={e => setFormData({ ...formData, title: e.target.value })}
               placeholder="Content title"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+              className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:border-black"
             />
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-black">Content *</label>
+              <label className="block text-sm font-medium text-[var(--hx-text)]">Content *</label>
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, body: formData.body + '\n\n' })}
-                className="text-sm text-gray-600 hover:text-black"
+                className="text-sm text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]"
               >
                 ➕ Add line
               </button>
@@ -175,20 +175,20 @@ export default function NewContentPage() {
               onChange={e => setFormData({ ...formData, body: e.target.value })}
               placeholder="Write your content here..."
               rows={12}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black font-mono text-sm"
+              className="w-full px-4 py-3 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:border-black font-mono text-sm"
             />
-            <div className="text-xs text-gray-500 mt-1">{formData.body.length} characters</div>
+            <div className="text-xs text-[var(--hx-text-secondary)] mt-1">{formData.body.length} characters</div>
           </div>
 
           <div className="border-t pt-6">
-            <h3 className="text-sm font-semibold text-black mb-3">🤖 Generate with AI</h3>
+            <h3 className="text-sm font-semibold text-[var(--hx-text)] mb-3">🤖 Generate with AI</h3>
             <div className="space-y-3">
               <input
                 type="text"
                 value={aiInput}
                 onChange={e => setAiInput(e.target.value)}
                 placeholder={`Describe what you want (e.g., "cloud computing" for a LinkedIn post)`}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:border-black"
               />
               <button
                 type="button"
@@ -205,13 +205,13 @@ export default function NewContentPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
+              className="px-6 py-2 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save Content'}
             </button>
             <Link
               href="/dashboard/content"
-              className="px-6 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200"
+              className="px-6 py-2 bg-[var(--hx-surface-secondary)] text-[var(--hx-text)] rounded-lg hover:bg-gray-200"
             >
               Cancel
             </Link>

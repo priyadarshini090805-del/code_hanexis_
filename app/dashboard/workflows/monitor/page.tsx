@@ -51,24 +51,24 @@ export default function WorkflowMonitorPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'RUNNING':
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]';
       case 'COMPLETED':
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]';
       case 'FAILED':
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]';
       case 'PAUSED':
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]';
     }
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">Workflow Executions</h1>
-          <Link href="/dashboard/workflows" className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">Workflow Executions</h1>
+          <Link href="/dashboard/workflows" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -76,8 +76,8 @@ export default function WorkflowMonitorPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
@@ -88,8 +88,8 @@ export default function WorkflowMonitorPage() {
               onClick={() => setFilter(status)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                 filter === status
-                  ? 'bg-black text-white'
-                  : 'border border-gray-300 text-black hover:border-black'
+                  ? 'hx-btn-primary'
+                  : 'border border-[var(--hx-border)] text-[var(--hx-text)] hover:border-black'
               }`}
             >
               {status}
@@ -98,17 +98,17 @@ export default function WorkflowMonitorPage() {
         </div>
 
         {loading ? (
-          <p className="text-center text-gray-500">Loading executions...</p>
+          <p className="text-center text-[var(--hx-text-secondary)]">Loading executions...</p>
         ) : executions.length > 0 ? (
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="border border-[var(--hx-border)] rounded-lg overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-[var(--hx-surface-secondary)] border-b border-[var(--hx-border)]">
                 <tr>
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-black">Execution ID</th>
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-black">Status</th>
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-black">Progress</th>
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-black">Started</th>
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-black">Duration</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Execution ID</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Status</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Progress</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Started</th>
+                  <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Duration</th>
                 </tr>
               </thead>
               <tbody>
@@ -119,20 +119,20 @@ export default function WorkflowMonitorPage() {
                       : Math.round((Date.now() - new Date(e.startedAt).getTime()) / 1000);
 
                   return (
-                    <tr key={e.id} className="border-b border-gray-200 hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-black font-mono">{e.id.substring(0, 8)}...</td>
+                    <tr key={e.id} className="border-b border-[var(--hx-border)] hover:bg-[var(--hx-surface-secondary)]">
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text)] font-mono">{e.id.substring(0, 8)}...</td>
                       <td className="px-4 py-3 text-sm">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(e.status)}`}>
                           {e.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text-secondary)]">
                         {e.currentStep}/{e.totalSteps} steps
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text-secondary)]">
                         {new Date(e.startedAt).toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{duration}s</td>
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text-secondary)]">{duration}s</td>
                     </tr>
                   );
                 })}
@@ -141,7 +141,7 @@ export default function WorkflowMonitorPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500">No workflow executions yet</p>
+            <p className="text-[var(--hx-text-secondary)]">No workflow executions yet</p>
           </div>
         )}
       </div>

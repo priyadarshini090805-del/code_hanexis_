@@ -42,11 +42,11 @@ export default function NewWorkflowPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">Create Workflow</h1>
-          <Link href="/dashboard/workflows" className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">Create Workflow</h1>
+          <Link href="/dashboard/workflows" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -54,31 +54,31 @@ export default function NewWorkflowPage() {
 
       <div className="max-w-2xl mx-auto px-6 py-12">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-black mb-2">Workflow Name</label>
+            <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Workflow Name</label>
             <input
               type="text"
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., LinkedIn Cold Outreach"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-black mb-2">Description</label>
+            <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Description</label>
             <textarea
               value={formData.description}
               onChange={e => setFormData({ ...formData, description: e.target.value })}
               placeholder="What does this workflow do?"
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
             />
           </div>
 
@@ -86,22 +86,22 @@ export default function NewWorkflowPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 font-medium"
+              className="flex-1 px-6 py-3 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] disabled:opacity-50 font-medium"
             >
               {loading ? 'Creating...' : 'Create Workflow'}
             </button>
             <Link
               href="/dashboard/workflows"
-              className="flex-1 px-6 py-3 border border-gray-300 text-black rounded-lg hover:border-black text-center font-medium"
+              className="flex-1 px-6 py-3 border border-[var(--hx-border)] text-[var(--hx-text)] rounded-lg hover:border-black text-center font-medium"
             >
               Cancel
             </Link>
           </div>
         </form>
 
-        <div className="mt-12 bg-neutral-50 p-6 rounded-lg border border-neutral-200">
-          <h3 className="font-semibold text-black mb-2">What is a Workflow?</h3>
-          <p className="text-sm text-gray-700">
+        <div className="mt-12 bg-[var(--hx-surface-secondary)] p-6 rounded-lg border border-[var(--hx-border)]">
+          <h3 className="font-semibold text-[var(--hx-text)] mb-2">What is a Workflow?</h3>
+          <p className="text-sm text-[var(--hx-text-secondary)]">
             A workflow is a sequence of automated steps that runs on a schedule or in response to events. You can send messages, wait for responses, create conditional branches, and more.
           </p>
         </div>

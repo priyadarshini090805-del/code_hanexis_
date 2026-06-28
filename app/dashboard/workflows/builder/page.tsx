@@ -95,11 +95,11 @@ function WorkflowBuilderPage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading workflow...</div>;
+    return <div className="p-8 text-center text-[var(--hx-text-secondary)]">Loading workflow...</div>;
   }
 
   if (!workflow) {
-    return <div className="p-8 text-center text-neutral-600">Workflow not found</div>;
+    return <div className="p-8 text-center text-[var(--hx-text-secondary)]">Workflow not found</div>;
   }
 
   const stepTypeOptions = [
@@ -110,11 +110,11 @@ function WorkflowBuilderPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">Workflow Builder</h1>
-          <Link href={`/dashboard/workflows/${workflowId}`} className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">Workflow Builder</h1>
+          <Link href={`/dashboard/workflows/${workflowId}`} className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -122,34 +122,34 @@ function WorkflowBuilderPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
         <div className="grid grid-cols-3 gap-8">
           <div className="col-span-2 space-y-6">
-            <div className="border border-gray-200 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-black mb-4">{workflow.name}</h2>
+            <div className="border border-[var(--hx-border)] rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-[var(--hx-text)] mb-4">{workflow.name}</h2>
               <div className="space-y-3">
                 {workflow.steps.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">No steps added yet</p>
+                  <p className="text-[var(--hx-text-secondary)] text-center py-8">No steps added yet</p>
                 ) : (
                   workflow.steps.map((step) => (
-                    <div key={step.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div key={step.id} className="border border-[var(--hx-border)] rounded-lg p-4 bg-[var(--hx-surface-secondary)]">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <p className="font-semibold text-black">Step {step.stepNumber}: {step.type}</p>
+                          <p className="font-semibold text-[var(--hx-text)]">Step {step.stepNumber}: {step.type}</p>
                           {step.type === 'MESSAGE' && (
-                            <p className="text-sm text-gray-600 mt-2">{step.content?.message}</p>
+                            <p className="text-sm text-[var(--hx-text-secondary)] mt-2">{step.content?.message}</p>
                           )}
                           {step.type === 'DELAY' && (
-                            <p className="text-sm text-gray-600 mt-2">Wait {step.content?.delayMs / 1000} seconds</p>
+                            <p className="text-sm text-[var(--hx-text-secondary)] mt-2">Wait {step.content?.delayMs / 1000} seconds</p>
                           )}
                         </div>
                         <button
                           onClick={() => deleteStep(step.id)}
-                          className="text-neutral-600 hover:text-neutral-800 text-sm"
+                          className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)] text-sm"
                         >
                           Delete
                         </button>
@@ -162,16 +162,16 @@ function WorkflowBuilderPage() {
           </div>
 
           <div className="col-span-1">
-            <div className="bg-gray-50 rounded-lg p-6 sticky top-8">
-              <h3 className="font-semibold text-black mb-4">Add Step</h3>
+            <div className="bg-[var(--hx-surface-secondary)] rounded-lg p-6 sticky top-8">
+              <h3 className="font-semibold text-[var(--hx-text)] mb-4">Add Step</h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">Step Type</label>
+                  <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Step Type</label>
                   <select
                     value={newStepType}
                     onChange={e => setNewStepType(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                   >
                     {stepTypeOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>
@@ -183,27 +183,27 @@ function WorkflowBuilderPage() {
 
                 {newStepType === 'MESSAGE' && (
                   <div>
-                    <label className="block text-sm font-medium text-black mb-2">Message</label>
+                    <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Message</label>
                     <textarea
                       value={stepContent.message}
                       onChange={e => setStepContent({ ...stepContent, message: e.target.value })}
                       placeholder="Enter message text..."
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                     />
-                    <p className="text-xs text-gray-500 mt-2">{'Use {{firstName}}, {{lastName}}, {{company}} for variables'}</p>
+                    <p className="text-xs text-[var(--hx-text-secondary)] mt-2">{'Use {{firstName}}, {{lastName}}, {{company}} for variables'}</p>
                   </div>
                 )}
 
                 {newStepType === 'DELAY' && (
                   <div>
-                    <label className="block text-sm font-medium text-black mb-2">Delay (seconds)</label>
+                    <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Delay (seconds)</label>
                     <input
                       type="number"
                       value={stepContent.delayMs / 1000}
                       onChange={e => setStepContent({ ...stepContent, delayMs: parseInt(e.target.value) * 1000 })}
                       placeholder="60"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                     />
                   </div>
                 )}
@@ -211,7 +211,7 @@ function WorkflowBuilderPage() {
                 <button
                   onClick={addStep}
                   disabled={!stepContent.message && newStepType === 'MESSAGE'}
-                  className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50"
+                  className="w-full px-4 py-2 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] disabled:opacity-50"
                 >
                   Add Step
                 </button>
@@ -227,7 +227,7 @@ function WorkflowBuilderPage() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading…</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-[var(--hx-text-secondary)]">Loading…</div>}>
       <WorkflowBuilderPage />
     </Suspense>
   )

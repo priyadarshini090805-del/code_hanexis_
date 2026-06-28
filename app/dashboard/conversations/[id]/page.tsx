@@ -139,8 +139,8 @@ export default function ConversationDetailPage() {
   if (loading) return <div className="h-screen flex items-center justify-center text-gray-400">Loading...</div>;
   if (!conversation) return (
     <div className="p-8 text-center">
-      <p className="text-neutral-600">{error || 'Conversation not found'}</p>
-      <Link href="/dashboard/conversations" className="text-sm text-gray-500 mt-2 inline-block">← Back</Link>
+      <p className="text-[var(--hx-text-secondary)]">{error || 'Conversation not found'}</p>
+      <Link href="/dashboard/conversations" className="text-sm text-[var(--hx-text-secondary)] mt-2 inline-block">← Back</Link>
     </div>
   );
 
@@ -151,20 +151,20 @@ export default function ConversationDetailPage() {
   return (
     <div className="flex h-screen bg-white overflow-hidden">
       {/* Left sidebar — lead info + AI suggestions */}
-      <div className="w-72 border-r border-gray-200 flex flex-col shrink-0">
+      <div className="w-72 border-r border-[var(--hx-border)] flex flex-col shrink-0">
         {/* Lead header */}
-        <div className="p-4 border-b border-gray-100">
-          <Link href="/dashboard/conversations" className="text-xs text-gray-400 hover:text-black mb-3 flex items-center gap-1">
+        <div className="p-4 border-b border-[var(--hx-border-light)]">
+          <Link href="/dashboard/conversations" className="text-xs text-gray-400 hover:text-[var(--hx-text)] mb-3 flex items-center gap-1">
             ← All conversations
           </Link>
           {lead && (
             <div className="flex items-center gap-3 mt-3">
-              <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="w-10 h-10 rounded-full hx-btn-primary flex items-center justify-center font-bold text-sm shrink-0">
                 {initials}
               </div>
               <div className="min-w-0">
-                <p className="font-semibold text-black text-sm truncate">{lead.firstName} {lead.lastName}</p>
-                <p className="text-xs text-gray-500 truncate">{lead.email}</p>
+                <p className="font-semibold text-[var(--hx-text)] text-sm truncate">{lead.firstName} {lead.lastName}</p>
+                <p className="text-xs text-[var(--hx-text-secondary)] truncate">{lead.email}</p>
                 {lead.company && <p className="text-xs text-gray-400 truncate">{lead.company}</p>}
               </div>
             </div>
@@ -173,9 +173,9 @@ export default function ConversationDetailPage() {
 
         {/* Lead quick links */}
         {lead && (
-          <div className="px-4 py-3 border-b border-gray-100">
+          <div className="px-4 py-3 border-b border-[var(--hx-border-light)]">
             <Link href={`/dashboard/leads/${lead.id}`}
-              className="text-xs text-neutral-600 hover:text-neutral-800 flex items-center gap-1">
+              className="text-xs text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)] flex items-center gap-1">
               View Lead Profile →
             </Link>
           </div>
@@ -184,10 +184,10 @@ export default function ConversationDetailPage() {
         {/* AI Suggestions panel */}
         <div className="flex-1 overflow-y-auto p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-black uppercase tracking-wider">✨ AI Replies</h3>
+            <h3 className="text-xs font-semibold text-[var(--hx-text)] uppercase tracking-wider">✨ AI Replies</h3>
             <button
               onClick={() => setShowSuggestions(!showSuggestions)}
-              className="text-xs text-gray-400 hover:text-black"
+              className="text-xs text-gray-400 hover:text-[var(--hx-text)]"
             >
               {showSuggestions ? 'hide' : 'show'}
             </button>
@@ -199,14 +199,14 @@ export default function ConversationDetailPage() {
                 <button
                   key={i}
                   onClick={() => sendMessage(s)}
-                  className="w-full text-left text-xs p-2.5 bg-neutral-50 text-neutral-900 rounded-lg hover:bg-neutral-100 transition-colors border border-neutral-100"
+                  className="w-full text-left text-xs p-2.5 bg-[var(--hx-surface-secondary)] text-[var(--hx-text)] rounded-lg hover:bg-[var(--hx-surface-secondary)] transition-colors border border-neutral-100"
                 >
                   {s}
                 </button>
               ))}
               <Link
                 href={lead ? `/dashboard/ai?leadId=${lead.id}` : '/dashboard/ai'}
-                className="block text-xs text-center text-gray-500 hover:text-black mt-2 py-2 border border-dashed border-gray-200 rounded-lg"
+                className="block text-xs text-center text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)] mt-2 py-2 border border-dashed border-[var(--hx-border)] rounded-lg"
               >
                 Generate custom message →
               </Link>
@@ -216,8 +216,8 @@ export default function ConversationDetailPage() {
 
         {/* Platform badge */}
         {conversation.platform && (
-          <div className="px-4 py-3 border-t border-gray-100">
-            <span className="text-xs text-gray-400">via <span className="font-medium text-gray-600">{conversation.platform}</span></span>
+          <div className="px-4 py-3 border-t border-[var(--hx-border-light)]">
+            <span className="text-xs text-gray-400">via <span className="font-medium text-[var(--hx-text-secondary)]">{conversation.platform}</span></span>
           </div>
         )}
       </div>
@@ -225,13 +225,13 @@ export default function ConversationDetailPage() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Chat header */}
-        <div className="px-5 py-3 border-b border-gray-200 flex items-center justify-between shrink-0">
+        <div className="px-5 py-3 border-b border-[var(--hx-border)] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center text-xs font-bold">
               {initials}
             </div>
             <div>
-              <p className="text-sm font-semibold text-black">
+              <p className="text-sm font-semibold text-[var(--hx-text)]">
                 {lead ? `${lead.firstName} ${lead.lastName}` : 'Unknown'}
               </p>
               <p className="text-xs text-gray-400">{conversation.messages.length} messages</p>
@@ -240,7 +240,7 @@ export default function ConversationDetailPage() {
           <div className="flex gap-2">
             {lead && (
               <Link href={`/dashboard/ai?leadId=${lead.id}`}
-                className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
+                className="text-xs px-3 py-1.5 border border-[var(--hx-border)] rounded-lg text-[var(--hx-text-secondary)] hover:bg-[var(--hx-surface-secondary)]">
                 ✨ Generate
               </Link>
             )}
@@ -253,7 +253,7 @@ export default function ConversationDetailPage() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
                 <p className="text-4xl mb-3">💬</p>
-                <p className="text-gray-500 text-sm">No messages yet</p>
+                <p className="text-[var(--hx-text-secondary)] text-sm">No messages yet</p>
                 <p className="text-xs text-gray-300 mt-1">Use an AI suggestion on the left or type below</p>
               </div>
             </div>
@@ -262,9 +262,9 @@ export default function ConversationDetailPage() {
               <div key={group.date}>
                 {/* Date separator */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="flex-1 h-px bg-gray-100" />
+                  <div className="flex-1 h-px bg-[var(--hx-surface-secondary)]" />
                   <span className="text-xs text-gray-400 font-medium px-2">{group.date}</span>
-                  <div className="flex-1 h-px bg-gray-100" />
+                  <div className="flex-1 h-px bg-[var(--hx-surface-secondary)]" />
                 </div>
 
                 <div className="space-y-3">
@@ -273,7 +273,7 @@ export default function ConversationDetailPage() {
                     return (
                       <div key={msg.id} className={`flex gap-2.5 ${isMe ? 'justify-end' : 'justify-start'}`}>
                         {!isMe && (
-                          <div className="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold shrink-0 mt-1">
+                          <div className="w-7 h-7 rounded-full bg-gray-200 text-[var(--hx-text-secondary)] flex items-center justify-center text-xs font-bold shrink-0 mt-1">
                             {initials}
                           </div>
                         )}
@@ -281,21 +281,21 @@ export default function ConversationDetailPage() {
                           <div
                             className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                               isMe
-                                ? `bg-black text-white rounded-tr-sm ${msg.isAiSuggested ? 'ring-2 ring-neutral-400 ring-offset-1' : ''}`
-                                : 'bg-gray-100 text-black rounded-tl-sm'
+                                ? `hx-btn-primary rounded-tr-sm ${msg.isAiSuggested ? 'ring-2 ring-neutral-400 ring-offset-1' : ''}`
+                                : 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)] rounded-tl-sm'
                             }`}
                           >
                             {msg.content}
                           </div>
                           <div className={`flex items-center gap-1.5 px-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
                             {msg.isAiSuggested && (
-                              <span className="text-xs text-neutral-500">✨ AI</span>
+                              <span className="text-xs text-[var(--hx-text-secondary)]">✨ AI</span>
                             )}
                             <span className="text-xs text-gray-300">{formatTime(msg.createdAt)}</span>
                           </div>
                         </div>
                         {isMe && (
-                          <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0 mt-1">
+                          <div className="w-7 h-7 rounded-full hx-btn-primary flex items-center justify-center text-xs font-bold shrink-0 mt-1">
                             You
                           </div>
                         )}
@@ -310,12 +310,12 @@ export default function ConversationDetailPage() {
         </div>
 
         {/* Compose area */}
-        <div className="border-t border-gray-200 px-5 py-4 shrink-0">
+        <div className="border-t border-[var(--hx-border)] px-5 py-4 shrink-0">
           {error && (
-            <div className="mb-2 text-xs text-neutral-600 bg-neutral-50 rounded-lg px-3 py-2">{error}</div>
+            <div className="mb-2 text-xs text-[var(--hx-text-secondary)] bg-[var(--hx-surface-secondary)] rounded-lg px-3 py-2">{error}</div>
           )}
           <div className="flex gap-3 items-end">
-            <div className="flex-1 border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-black">
+            <div className="flex-1 border border-[var(--hx-border)] rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-black">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -324,7 +324,7 @@ export default function ConversationDetailPage() {
                 placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
                 rows={1}
                 style={{ resize: 'none' }}
-                className="w-full px-4 py-3 text-sm text-black focus:outline-none bg-white"
+                className="w-full px-4 py-3 text-sm text-[var(--hx-text)] focus:outline-none bg-[var(--hx-surface)]"
                 onInput={(e) => {
                   const ta = e.currentTarget;
                   ta.style.height = 'auto';
@@ -335,7 +335,7 @@ export default function ConversationDetailPage() {
             <button
               onClick={() => sendMessage()}
               disabled={sending || !input.trim()}
-              className="px-5 py-3 bg-black text-white text-sm rounded-xl hover:bg-gray-900 disabled:opacity-40 font-medium shrink-0"
+              className="px-5 py-3 hx-btn-primary text-sm rounded-xl hover:bg-[var(--hx-brand-light)] disabled:opacity-40 font-medium shrink-0"
             >
               {sending ? '...' : 'Send'}
             </button>

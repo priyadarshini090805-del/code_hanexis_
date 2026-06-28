@@ -78,22 +78,22 @@ export default function ApprovalsPage() {
   }
 
   const statusColors: Record<string, string> = {
-    PENDING: 'bg-neutral-100 text-neutral-800',
-    APPROVED: 'bg-neutral-100 text-neutral-800',
-    REJECTED: 'bg-neutral-100 text-neutral-800',
-    SENT: 'bg-neutral-100 text-neutral-800',
+    PENDING: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
+    APPROVED: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
+    REJECTED: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
+    SENT: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="border-b border-gray-200 px-6 py-4">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-black">Message Approvals</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Review AI-generated messages before they&apos;re sent</p>
+            <h1 className="text-2xl font-bold text-[var(--hx-text)]">Message Approvals</h1>
+            <p className="text-sm text-[var(--hx-text-secondary)] mt-0.5">Review AI-generated messages before they&apos;re sent</p>
           </div>
-          <Link href="/dashboard/ai" className="text-sm text-gray-500 hover:text-black">← AI Generator</Link>
+          <Link href="/dashboard/ai" className="text-sm text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">← AI Generator</Link>
         </div>
       </div>
 
@@ -105,11 +105,11 @@ export default function ApprovalsPage() {
               key={s}
               onClick={() => setStatusFilter(s)}
               className={`p-4 rounded-xl border-2 text-left transition-all ${
-                statusFilter === s ? 'border-black bg-black text-white' : 'border-gray-200 hover:border-gray-400'
+                statusFilter === s ? 'border-black hx-btn-primary' : 'border-[var(--hx-border)] hover:border-gray-400'
               }`}
             >
               <p className={`text-2xl font-bold ${statusFilter === s ? 'text-white' : 'text-black'}`}>{summary[s]}</p>
-              <p className={`text-xs mt-1 uppercase tracking-wider ${statusFilter === s ? 'text-gray-300' : 'text-gray-500'}`}>{s}</p>
+              <p className={`text-xs mt-1 uppercase tracking-wider ${statusFilter === s ? 'text-gray-300' : 'text-[var(--hx-text-secondary)]'}`}>{s}</p>
             </button>
           ))}
         </div>
@@ -118,26 +118,26 @@ export default function ApprovalsPage() {
         {loading ? (
           <div className="text-center py-16 text-gray-400">Loading...</div>
         ) : generations.length === 0 ? (
-          <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-xl">
-            <p className="text-gray-500 text-lg">No {statusFilter.toLowerCase()} messages</p>
-            <Link href="/dashboard/ai" className="mt-3 inline-block text-sm text-black underline">Generate a message →</Link>
+          <div className="text-center py-16 border-2 border-dashed border-[var(--hx-border)] rounded-xl">
+            <p className="text-[var(--hx-text-secondary)] text-lg">No {statusFilter.toLowerCase()} messages</p>
+            <Link href="/dashboard/ai" className="mt-3 inline-block text-sm text-[var(--hx-text)] underline">Generate a message →</Link>
           </div>
         ) : (
           <div className="space-y-4">
             {generations.map((gen) => (
-              <div key={gen.id} className="border border-gray-200 rounded-xl p-5 bg-white">
+              <div key={gen.id} className="border border-[var(--hx-border)] rounded-xl p-5 bg-[var(--hx-surface)]">
                 {/* Top row */}
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-black">
+                      <span className="font-semibold text-[var(--hx-text)]">
                         {gen.lead.firstName} {gen.lead.lastName}
                       </span>
-                      {gen.lead.company && <span className="text-sm text-gray-500">@ {gen.lead.company}</span>}
+                      {gen.lead.company && <span className="text-sm text-[var(--hx-text-secondary)]">@ {gen.lead.company}</span>}
                       {gen.lead.jobTitle && <span className="text-xs text-gray-400">· {gen.lead.jobTitle}</span>}
                     </div>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-[var(--hx-surface-secondary)] text-[var(--hx-text-secondary)] px-2 py-0.5 rounded">
                         {TYPE_LABELS[gen.messageType] || gen.messageType}
                       </span>
                       <span className="text-xs text-gray-400">{gen.tone} · {gen.length}</span>
@@ -155,17 +155,17 @@ export default function ApprovalsPage() {
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
                     rows={8}
-                    className="w-full text-sm text-black border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                    className="w-full text-sm text-[var(--hx-text)] border border-[var(--hx-border)] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)] resize-none"
                   />
                 ) : (
-                  <div className="bg-gray-50 rounded-lg p-4 text-sm text-black whitespace-pre-wrap max-h-48 overflow-y-auto">
+                  <div className="bg-[var(--hx-surface-secondary)] rounded-lg p-4 text-sm text-[var(--hx-text)] whitespace-pre-wrap max-h-48 overflow-y-auto">
                     {gen.approvedMessage || gen.response}
                   </div>
                 )}
 
                 {/* Rejection reason */}
                 {gen.approvalStatus === 'REJECTED' && gen.rejectionReason && (
-                  <p className="mt-2 text-xs text-neutral-600">Reason: {gen.rejectionReason}</p>
+                  <p className="mt-2 text-xs text-[var(--hx-text-secondary)]">Reason: {gen.rejectionReason}</p>
                 )}
 
                 {/* Reject reason input */}
@@ -189,13 +189,13 @@ export default function ApprovalsPage() {
                         <button
                           onClick={() => handleApprove(gen.id, editText)}
                           disabled={actionLoading === gen.id}
-                          className="flex-1 px-4 py-2 bg-black text-white text-sm rounded-lg font-medium hover:bg-gray-900 disabled:opacity-50"
+                          className="flex-1 px-4 py-2 hx-btn-primary text-sm rounded-lg font-medium hover:bg-[var(--hx-brand-light)] disabled:opacity-50"
                         >
                           {actionLoading === gen.id ? 'Approving...' : '✓ Approve with Edits'}
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
-                          className="px-4 py-2 border border-gray-300 text-sm rounded-lg text-gray-600 hover:bg-gray-50"
+                          className="px-4 py-2 border border-[var(--hx-border)] text-sm rounded-lg text-[var(--hx-text-secondary)] hover:bg-[var(--hx-surface-secondary)]"
                         >
                           Cancel
                         </button>
@@ -211,7 +211,7 @@ export default function ApprovalsPage() {
                         </button>
                         <button
                           onClick={() => { setRejectingId(null); setRejectReason(''); }}
-                          className="px-4 py-2 border border-gray-300 text-sm rounded-lg text-gray-600 hover:bg-gray-50"
+                          className="px-4 py-2 border border-[var(--hx-border)] text-sm rounded-lg text-[var(--hx-text-secondary)] hover:bg-[var(--hx-surface-secondary)]"
                         >
                           Cancel
                         </button>
@@ -221,25 +221,25 @@ export default function ApprovalsPage() {
                         <button
                           onClick={() => handleApprove(gen.id)}
                           disabled={actionLoading === gen.id}
-                          className="flex-1 px-4 py-2 bg-black text-white text-sm rounded-lg font-medium hover:bg-gray-900 disabled:opacity-50"
+                          className="flex-1 px-4 py-2 hx-btn-primary text-sm rounded-lg font-medium hover:bg-[var(--hx-brand-light)] disabled:opacity-50"
                         >
                           ✓ Approve
                         </button>
                         <button
                           onClick={() => { setEditingId(gen.id); setEditText(gen.response); }}
-                          className="px-4 py-2 border border-gray-300 text-sm rounded-lg text-gray-700 hover:bg-gray-50"
+                          className="px-4 py-2 border border-[var(--hx-border)] text-sm rounded-lg text-[var(--hx-text-secondary)] hover:bg-[var(--hx-surface-secondary)]"
                         >
                           ✎ Edit & Approve
                         </button>
                         <button
                           onClick={() => setRejectingId(gen.id)}
-                          className="px-4 py-2 border border-neutral-200 text-neutral-600 text-sm rounded-lg hover:bg-neutral-50"
+                          className="px-4 py-2 border border-[var(--hx-border)] text-[var(--hx-text-secondary)] text-sm rounded-lg hover:bg-[var(--hx-surface-secondary)]"
                         >
                           ✗ Reject
                         </button>
                         <Link
                           href={`/dashboard/leads/${gen.lead.id}`}
-                          className="px-4 py-2 border border-gray-200 text-gray-500 text-sm rounded-lg hover:bg-gray-50"
+                          className="px-4 py-2 border border-[var(--hx-border)] text-[var(--hx-text-secondary)] text-sm rounded-lg hover:bg-[var(--hx-surface-secondary)]"
                         >
                           View Lead
                         </Link>

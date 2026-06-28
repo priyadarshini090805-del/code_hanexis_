@@ -98,11 +98,11 @@ export default function ContentEditorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">Content Editor</h1>
-          <Link href="/dashboard/content" className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">Content Editor</h1>
+          <Link href="/dashboard/content" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -110,31 +110,31 @@ export default function ContentEditorPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
         <div className="grid grid-cols-3 gap-8">
           <div className="col-span-2 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-black mb-2">Topic / Title</label>
+              <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Topic / Title</label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={e => setFormData({ ...formData, title: e.target.value })}
                 placeholder="What would you like to create about?"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">Content Type</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Content Type</label>
                 <select
                   value={formData.type}
                   onChange={e => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 >
                   {contentTypes.map(ct => (
                     <option key={ct.value} value={ct.value}>
@@ -145,11 +145,11 @@ export default function ContentEditorPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">Tone</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Tone</label>
                 <select
                   value={formData.tone}
                   onChange={e => setFormData({ ...formData, tone: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 >
                   {tones.map(t => (
                     <option key={t.value} value={t.value}>
@@ -162,11 +162,11 @@ export default function ContentEditorPage() {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-black">Content</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)]">Content</label>
                 <button
                   onClick={generateWithAI}
                   disabled={aiLoading || !formData.title}
-                  className="text-sm px-3 py-1 bg-neutral-100 text-neutral-800 rounded hover:bg-neutral-200 disabled:opacity-50"
+                  className="text-sm px-3 py-1 bg-[var(--hx-surface-secondary)] text-[var(--hx-text)] rounded hover:bg-neutral-200 disabled:opacity-50"
                 >
                   {aiLoading ? 'Generating...' : '✨ Generate with AI'}
                 </button>
@@ -176,32 +176,32 @@ export default function ContentEditorPage() {
                 onChange={e => setFormData({ ...formData, body: e.target.value })}
                 placeholder="Your content here..."
                 rows={12}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm"
+                className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)] font-mono text-sm"
               />
-              <p className="text-sm text-gray-500 mt-2">{formData.body.length} characters</p>
+              <p className="text-sm text-[var(--hx-text-secondary)] mt-2">{formData.body.length} characters</p>
             </div>
 
             <button
               onClick={saveContent}
               disabled={saving}
-              className="w-full px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50"
+              className="w-full px-6 py-3 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Content'}
             </button>
           </div>
 
           <div className="col-span-1">
-            <div className="bg-gray-50 rounded-lg p-4 sticky top-8">
-              <h3 className="font-semibold text-black mb-4">Preview</h3>
-              <div className="text-sm text-gray-600">
-                <p className="font-medium text-black mb-2">{formData.title || 'No title'}</p>
-                <p className="text-xs bg-white p-2 rounded border border-gray-200 mb-4">
+            <div className="bg-[var(--hx-surface-secondary)] rounded-lg p-4 sticky top-8">
+              <h3 className="font-semibold text-[var(--hx-text)] mb-4">Preview</h3>
+              <div className="text-sm text-[var(--hx-text-secondary)]">
+                <p className="font-medium text-[var(--hx-text)] mb-2">{formData.title || 'No title'}</p>
+                <p className="text-xs bg-white p-2 rounded border border-[var(--hx-border)] mb-4">
                   {formData.body.substring(0, 150) || 'Content preview will appear here...'}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--hx-text-secondary)]">
                   Type: {contentTypes.find(ct => ct.value === formData.type)?.label}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--hx-text-secondary)]">
                   Tone: {tones.find(t => t.value === formData.tone)?.label}
                 </p>
               </div>

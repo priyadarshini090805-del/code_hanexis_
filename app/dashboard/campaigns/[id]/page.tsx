@@ -52,15 +52,15 @@ export default function CampaignDetailPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading campaign...</div>;
-  if (!campaign) return <div className="p-8 text-center text-neutral-600">Campaign not found</div>;
+  if (loading) return <div className="p-8 text-center text-[var(--hx-text-secondary)]">Loading campaign...</div>;
+  if (!campaign) return <div className="p-8 text-center text-[var(--hx-text-secondary)]">Campaign not found</div>;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">{campaign.name}</h1>
-          <Link href="/dashboard/campaigns" className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">{campaign.name}</h1>
+          <Link href="/dashboard/campaigns" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -68,51 +68,51 @@ export default function CampaignDetailPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
         {stats && (
           <div className="grid grid-cols-4 gap-4 mb-8">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Leads</p>
-              <p className="text-2xl font-bold text-black">{stats.totalLeads}</p>
+            <div className="bg-[var(--hx-surface-secondary)] p-4 rounded-lg">
+              <p className="text-sm text-[var(--hx-text-secondary)]">Total Leads</p>
+              <p className="text-2xl font-bold text-[var(--hx-text)]">{stats.totalLeads}</p>
             </div>
-            <div className="bg-neutral-50 p-4 rounded-lg">
-              <p className="text-sm text-neutral-800">Contacted</p>
-              <p className="text-2xl font-bold text-neutral-900">{stats.contacted}</p>
+            <div className="bg-[var(--hx-surface-secondary)] p-4 rounded-lg">
+              <p className="text-sm text-[var(--hx-text)]">Contacted</p>
+              <p className="text-2xl font-bold text-[var(--hx-text)]">{stats.contacted}</p>
             </div>
-            <div className="bg-neutral-50 p-4 rounded-lg">
-              <p className="text-sm text-neutral-800">Responded</p>
-              <p className="text-2xl font-bold text-neutral-900">{stats.responded}</p>
+            <div className="bg-[var(--hx-surface-secondary)] p-4 rounded-lg">
+              <p className="text-sm text-[var(--hx-text)]">Responded</p>
+              <p className="text-2xl font-bold text-[var(--hx-text)]">{stats.responded}</p>
             </div>
-            <div className="bg-neutral-50 p-4 rounded-lg">
-              <p className="text-sm text-neutral-800">Converted</p>
-              <p className="text-2xl font-bold text-neutral-900">{stats.converted}</p>
+            <div className="bg-[var(--hx-surface-secondary)] p-4 rounded-lg">
+              <p className="text-sm text-[var(--hx-text)]">Converted</p>
+              <p className="text-2xl font-bold text-[var(--hx-text)]">{stats.converted}</p>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-3 gap-8 mb-8">
           <div className="col-span-2">
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h2 className="font-semibold text-black mb-4">Campaign Details</h2>
-              <p className="text-sm text-gray-600">{campaign.description}</p>
-              <p className="text-xs text-gray-500 mt-4">
+            <div className="bg-[var(--hx-surface-secondary)] p-6 rounded-lg">
+              <h2 className="font-semibold text-[var(--hx-text)] mb-4">Campaign Details</h2>
+              <p className="text-sm text-[var(--hx-text-secondary)]">{campaign.description}</p>
+              <p className="text-xs text-[var(--hx-text-secondary)] mt-4">
                 Created {new Date(campaign.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
 
           <div>
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="font-semibold text-black mb-4">Status</h3>
+            <div className="bg-[var(--hx-surface-secondary)] p-6 rounded-lg">
+              <h3 className="font-semibold text-[var(--hx-text)] mb-4">Status</h3>
               <p className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                campaign.status === 'RUNNING' ? 'bg-neutral-100 text-neutral-800' :
-                campaign.status === 'COMPLETED' ? 'bg-neutral-100 text-neutral-800' :
-                campaign.status === 'DRAFT' ? 'bg-gray-100 text-gray-800' :
-                'bg-neutral-100 text-neutral-800'
+                campaign.status === 'RUNNING' ? 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]' :
+                campaign.status === 'COMPLETED' ? 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]' :
+                campaign.status === 'DRAFT' ? 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]' :
+                'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]'
               }`}>
                 {campaign.status}
               </p>
@@ -122,40 +122,40 @@ export default function CampaignDetailPage() {
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-black">Leads ({campaign.leads.length})</h2>
-            <Link href={`/dashboard/campaigns/${id}/leads`} className="text-neutral-600 hover:text-neutral-800">
+            <h2 className="text-lg font-semibold text-[var(--hx-text)]">Leads ({campaign.leads.length})</h2>
+            <Link href={`/dashboard/campaigns/${id}/leads`} className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
               View all →
             </Link>
           </div>
 
           {campaign.leads.length > 0 ? (
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border border-[var(--hx-border)] rounded-lg overflow-hidden">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-[var(--hx-surface-secondary)] border-b border-[var(--hx-border)]">
                   <tr>
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-black">Name</th>
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-black">Email</th>
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-black">Company</th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Name</th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Email</th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-[var(--hx-text)]">Company</th>
                   </tr>
                 </thead>
                 <tbody>
                   {campaign.leads.slice(0, 5).map((cl: any) => (
-                    <tr key={cl.id} className="border-b border-gray-200 hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-black">{cl.lead?.firstName} {cl.lead?.lastName}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{cl.lead?.email}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{cl.lead?.company}</td>
+                    <tr key={cl.id} className="border-b border-[var(--hx-border)] hover:bg-[var(--hx-surface-secondary)]">
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text)]">{cl.lead?.firstName} {cl.lead?.lastName}</td>
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text-secondary)]">{cl.lead?.email}</td>
+                      <td className="px-4 py-3 text-sm text-[var(--hx-text-secondary)]">{cl.lead?.company}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No leads added yet</p>
+            <p className="text-[var(--hx-text-secondary)] text-center py-8">No leads added yet</p>
           )}
         </div>
 
         <div className="mt-8">
-          <Link href={`/dashboard/campaigns/${id}/analytics`} className="text-neutral-600 hover:text-neutral-800">
+          <Link href={`/dashboard/campaigns/${id}/analytics`} className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             View analytics →
           </Link>
         </div>

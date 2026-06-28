@@ -112,11 +112,11 @@ export default function NewCampaignPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">New Campaign</h1>
-          <Link href="/dashboard/campaigns" className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">New Campaign</h1>
+          <Link href="/dashboard/campaigns" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -124,41 +124,41 @@ export default function NewCampaignPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-8">
           <div className="col-span-1 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-black mb-2">Campaign Name</label>
+              <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Campaign Name</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., Q4 Outreach"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-2">Description</label>
+              <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Description</label>
               <textarea
                 value={formData.description}
                 onChange={e => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Campaign details..."
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black mb-2">Workflow (Optional)</label>
+              <label className="block text-sm font-medium text-[var(--hx-text)] mb-2">Workflow (Optional)</label>
               <select
                 value={formData.workflowId}
                 onChange={e => setFormData({ ...formData, workflowId: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
               >
                 <option value="">Select a workflow...</option>
                 {workflows.map(w => (
@@ -172,24 +172,24 @@ export default function NewCampaignPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 font-medium"
+              className="w-full px-6 py-3 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] disabled:opacity-50 font-medium"
             >
               {loading ? 'Creating...' : 'Create Campaign'}
             </button>
           </div>
 
           <div className="col-span-2">
-            <div className="border border-gray-200 rounded-lg p-6">
-              <h2 className="font-semibold text-black mb-4">
+            <div className="border border-[var(--hx-border)] rounded-lg p-6">
+              <h2 className="font-semibold text-[var(--hx-text)] mb-4">
                 Select Leads ({selectedLeads.size})
               </h2>
 
               {leadsLoading ? (
-                <p className="text-gray-500">Loading leads...</p>
+                <p className="text-[var(--hx-text-secondary)]">Loading leads...</p>
               ) : leads.length > 0 ? (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {leads.map(lead => (
-                    <label key={lead.id} className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <label key={lead.id} className="flex items-center p-3 border border-[var(--hx-border)] rounded-lg hover:bg-[var(--hx-surface-secondary)] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedLeads.has(lead.id)}
@@ -197,16 +197,16 @@ export default function NewCampaignPage() {
                         className="mr-3 w-4 h-4"
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-black">
+                        <p className="font-medium text-[var(--hx-text)]">
                           {lead.firstName} {lead.lastName}
                         </p>
-                        <p className="text-sm text-gray-600">{lead.email}</p>
+                        <p className="text-sm text-[var(--hx-text-secondary)]">{lead.email}</p>
                       </div>
                     </label>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No leads available</p>
+                <p className="text-[var(--hx-text-secondary)]">No leads available</p>
               )}
             </div>
           </div>

@@ -66,45 +66,45 @@ export default function LinkedInManagementPage() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-gray-500">
+      <div className="p-8 text-center text-[var(--hx-text-secondary)]">
         Loading LinkedIn profile...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-black">LinkedIn Management</h1>
-          <Link href="/dashboard/integrations" className="text-gray-600 hover:text-black">
+          <h1 className="text-3xl font-bold text-[var(--hx-text)]">LinkedIn Management</h1>
+          <Link href="/dashboard/integrations" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
 
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
         {profile && (
-          <div className="bg-gray-50 rounded-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold text-black mb-4">Profile Information</h2>
+          <div className="bg-[var(--hx-surface-secondary)] rounded-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold text-[var(--hx-text)] mb-4">Profile Information</h2>
             <div className="space-y-2">
-              <p className="text-black">
+              <p className="text-[var(--hx-text)]">
                 <span className="font-medium">Name:</span> {profile.localizedFirstName} {profile.localizedLastName}
               </p>
             </div>
           </div>
         )}
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-black mb-4">Connections</h2>
+        <div className="bg-white border border-[var(--hx-border)] rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-[var(--hx-text)] mb-4">Connections</h2>
           <button
             onClick={handleSyncConnections}
             disabled={syncInProgress}
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 mb-6"
+            className="px-6 py-2 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] disabled:opacity-50 mb-6"
           >
             {syncInProgress ? 'Syncing...' : 'Sync Connections'}
           </button>
@@ -112,9 +112,9 @@ export default function LinkedInManagementPage() {
           {connections.length > 0 && (
             <div className="space-y-3">
               {connections.map((conn, idx) => (
-                <div key={idx} className="p-3 border border-gray-200 rounded">
-                  <p className="font-medium text-black">{conn.firstName} {conn.lastName}</p>
-                  <p className="text-sm text-gray-600">{conn.email}</p>
+                <div key={idx} className="p-3 border border-[var(--hx-border)] rounded">
+                  <p className="font-medium text-[var(--hx-text)]">{conn.firstName} {conn.lastName}</p>
+                  <p className="text-sm text-[var(--hx-text-secondary)]">{conn.email}</p>
                 </div>
               ))}
             </div>

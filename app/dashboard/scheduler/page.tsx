@@ -15,7 +15,7 @@ interface ScheduledContent {
 const PLATFORM_COLORS: Record<string, string> = {
   LINKEDIN: 'bg-neutral-600',
   TWITTER: 'bg-neutral-400',
-  INSTAGRAM: 'bg-neutral-500',
+  INSTAGRAM: 'bg-[var(--hx-surface-secondary)]0',
   FACEBOOK: 'bg-neutral-600',
 };
 const PLATFORM_LABELS: Record<string, string> = {
@@ -25,11 +25,11 @@ const PLATFORM_LABELS: Record<string, string> = {
   FACEBOOK: 'FB',
 };
 const STATUS_COLORS: Record<string, string> = {
-  PENDING: 'bg-neutral-100 text-neutral-800',
-  PUBLISHED: 'bg-neutral-100 text-neutral-800',
-  FAILED: 'bg-neutral-100 text-neutral-800',
-  CANCELLED: 'bg-gray-100 text-gray-600',
-  PROCESSING: 'bg-neutral-100 text-neutral-800',
+  PENDING: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
+  PUBLISHED: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
+  FAILED: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
+  CANCELLED: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text-secondary)]',
+  PROCESSING: 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text)]',
 };
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -80,31 +80,31 @@ export default function SchedulerPage() {
   const selectedItems = selectedDay ? (dayMap[selectedDay] || []) : [];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-black">Content Scheduler</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Plan and manage your social media posts</p>
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">Content Scheduler</h1>
+          <p className="text-sm text-[var(--hx-text-secondary)] mt-0.5">Plan and manage your social media posts</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+          <div className="flex rounded-lg border border-[var(--hx-border)] overflow-hidden">
             <button
               onClick={() => setView('calendar')}
-              className={`px-3 py-1.5 text-sm ${view === 'calendar' ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`px-3 py-1.5 text-sm ${view === 'calendar' ? 'hx-btn-primary' : 'text-[var(--hx-text-secondary)] hover:bg-[var(--hx-surface-secondary)]'}`}
             >
               Calendar
             </button>
             <button
               onClick={() => setView('list')}
-              className={`px-3 py-1.5 text-sm border-l border-gray-200 ${view === 'list' ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`px-3 py-1.5 text-sm border-l border-[var(--hx-border)] ${view === 'list' ? 'hx-btn-primary' : 'text-[var(--hx-text-secondary)] hover:bg-[var(--hx-surface-secondary)]'}`}
             >
               List
             </button>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm font-medium"
+            className="px-4 py-2 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)] text-sm font-medium"
           >
             + Schedule Post
           </button>
@@ -120,14 +120,14 @@ export default function SchedulerPage() {
         {stats && (
           <div className="grid grid-cols-4 gap-3 mb-6">
             {[
-              { label: 'Pending', value: stats.pending, color: 'text-neutral-600' },
-              { label: 'Published', value: stats.published, color: 'text-neutral-600' },
-              { label: 'Failed', value: stats.failed || 0, color: 'text-neutral-600' },
+              { label: 'Pending', value: stats.pending, color: 'text-[var(--hx-text-secondary)]' },
+              { label: 'Published', value: stats.published, color: 'text-[var(--hx-text-secondary)]' },
+              { label: 'Failed', value: stats.failed || 0, color: 'text-[var(--hx-text-secondary)]' },
               { label: 'Total', value: stats.total, color: 'text-black' },
             ].map((s) => (
-              <div key={s.label} className="bg-gray-50 rounded-xl p-4">
+              <div key={s.label} className="bg-[var(--hx-surface-secondary)] rounded-xl p-4">
                 <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                <p className="text-xs text-[var(--hx-text-secondary)] mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
@@ -136,28 +136,28 @@ export default function SchedulerPage() {
         {view === 'calendar' ? (
           <div className="grid grid-cols-3 gap-6">
             {/* Calendar */}
-            <div className="col-span-2 border border-gray-200 rounded-xl p-5">
+            <div className="col-span-2 border border-[var(--hx-border)] rounded-xl p-5">
               {/* Month nav */}
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-bold text-black">
+                <h2 className="text-lg font-bold text-[var(--hx-text)]">
                   {MONTHS[month]} {year}
                 </h2>
                 <div className="flex gap-2">
                   <button
                     onClick={() => { setCurrentMonth(new Date(year, month - 1)); setSelectedDay(null); }}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:border-black text-gray-600 hover:text-black"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-[var(--hx-border)] hover:border-black text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]"
                   >
                     &#8249;
                   </button>
                   <button
                     onClick={() => { setCurrentMonth(new Date()); setSelectedDay(null); }}
-                    className="px-3 h-8 text-xs rounded-lg border border-gray-200 hover:border-black text-gray-600 hover:text-black"
+                    className="px-3 h-8 text-xs rounded-lg border border-[var(--hx-border)] hover:border-black text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]"
                   >
                     Today
                   </button>
                   <button
                     onClick={() => { setCurrentMonth(new Date(year, month + 1)); setSelectedDay(null); }}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:border-black text-gray-600 hover:text-black"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-[var(--hx-border)] hover:border-black text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]"
                   >
                     &#8250;
                   </button>
@@ -177,7 +177,7 @@ export default function SchedulerPage() {
               {loading ? (
                 <div className="h-64 flex items-center justify-center text-gray-400">Loading...</div>
               ) : (
-                <div className="grid grid-cols-7 gap-px bg-gray-100 rounded-lg overflow-hidden border border-gray-100">
+                <div className="grid grid-cols-7 gap-px bg-[var(--hx-surface-secondary)] rounded-lg overflow-hidden border border-[var(--hx-border-light)]">
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => (
                     <div key={`pre-${i}`} className="bg-white min-h-24 p-1" />
                   ))}
@@ -193,11 +193,11 @@ export default function SchedulerPage() {
                         key={day}
                         onClick={() => setSelectedDay(isSelected ? null : day)}
                         className={`bg-white min-h-24 p-1.5 cursor-pointer transition-colors ${
-                          isSelected ? 'ring-2 ring-black ring-inset' : 'hover:bg-gray-50'
+                          isSelected ? 'ring-2 ring-black ring-inset' : 'hover:bg-[var(--hx-surface-secondary)]'
                         }`}
                       >
                         <div className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
-                          isToday ? 'bg-black text-white' : 'text-gray-700'
+                          isToday ? 'hx-btn-primary' : 'text-[var(--hx-text-secondary)]'
                         }`}>
                           {day}
                         </div>
@@ -233,8 +233,8 @@ export default function SchedulerPage() {
             {/* Side panel */}
             <div className="col-span-1 space-y-4">
               {selectedDay ? (
-                <div className="border border-gray-200 rounded-xl p-4">
-                  <h3 className="font-semibold text-black mb-3">
+                <div className="border border-[var(--hx-border)] rounded-xl p-4">
+                  <h3 className="font-semibold text-[var(--hx-text)] mb-3">
                     {MONTHS[month]} {selectedDay}, {year}
                   </h3>
                   {selectedItems.length === 0 ? (
@@ -242,17 +242,17 @@ export default function SchedulerPage() {
                   ) : (
                     <div className="space-y-3">
                       {selectedItems.map((item) => (
-                        <div key={item.id} className="border border-gray-100 rounded-lg p-3">
+                        <div key={item.id} className="border border-[var(--hx-border-light)] rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1">
                             <span className={`text-xs text-white px-1.5 py-0.5 rounded ${PLATFORM_COLORS[item.platform] || 'bg-gray-400'}`}>
                               {item.platform}
                             </span>
-                            <span className={`text-xs px-1.5 py-0.5 rounded ${STATUS_COLORS[item.status] || 'bg-gray-100 text-gray-600'}`}>
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${STATUS_COLORS[item.status] || 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text-secondary)]'}`}>
                               {item.status}
                             </span>
                           </div>
-                          <p className="text-sm font-medium text-black">{item.title}</p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-sm font-medium text-[var(--hx-text)]">{item.title}</p>
+                          <p className="text-xs text-[var(--hx-text-secondary)] mt-1">
                             {new Date(item.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -261,13 +261,13 @@ export default function SchedulerPage() {
                   )}
                 </div>
               ) : (
-                <div className="border border-dashed border-gray-200 rounded-xl p-4 text-center">
+                <div className="border border-dashed border-[var(--hx-border)] rounded-xl p-4 text-center">
                   <p className="text-sm text-gray-400">Click a day to see posts</p>
                 </div>
               )}
 
-              <div className="border border-gray-200 rounded-xl p-4">
-                <h3 className="font-semibold text-black mb-3">Upcoming Posts</h3>
+              <div className="border border-[var(--hx-border)] rounded-xl p-4">
+                <h3 className="font-semibold text-[var(--hx-text)] mb-3">Upcoming Posts</h3>
                 <div className="space-y-2">
                   {scheduled
                     .filter((s) => new Date(s.scheduledFor) >= new Date() && s.status === 'PENDING')
@@ -279,7 +279,7 @@ export default function SchedulerPage() {
                           {PLATFORM_LABELS[item.platform]}
                         </span>
                         <div>
-                          <p className="text-xs font-medium text-black truncate max-w-[160px]">{item.title}</p>
+                          <p className="text-xs font-medium text-[var(--hx-text)] truncate max-w-[160px]">{item.title}</p>
                           <p className="text-xs text-gray-400">
                             {new Date(item.scheduledFor).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                             {' '}
@@ -296,8 +296,8 @@ export default function SchedulerPage() {
             </div>
           </div>
         ) : (
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
-            <div className="grid grid-cols-5 gap-4 px-4 py-2 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <div className="border border-[var(--hx-border)] rounded-xl overflow-hidden">
+            <div className="grid grid-cols-5 gap-4 px-4 py-2 bg-[var(--hx-surface-secondary)] text-xs font-semibold text-[var(--hx-text-secondary)] uppercase tracking-wider">
               <div>Title</div><div>Platform</div><div>Scheduled</div><div>Status</div><div></div>
             </div>
             {loading ? (
@@ -306,20 +306,20 @@ export default function SchedulerPage() {
               <div className="p-8 text-center text-gray-400">No posts this month</div>
             ) : (
               scheduled.map((item) => (
-                <div key={item.id} className="grid grid-cols-5 gap-4 px-4 py-3 border-t border-gray-100 hover:bg-gray-50">
-                  <div className="text-sm font-medium text-black truncate">{item.title}</div>
+                <div key={item.id} className="grid grid-cols-5 gap-4 px-4 py-3 border-t border-[var(--hx-border-light)] hover:bg-[var(--hx-surface-secondary)]">
+                  <div className="text-sm font-medium text-[var(--hx-text)] truncate">{item.title}</div>
                   <div>
                     <span className={`text-xs text-white px-2 py-0.5 rounded ${PLATFORM_COLORS[item.platform] || 'bg-gray-400'}`}>
                       {item.platform}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-[var(--hx-text-secondary)]">
                     {new Date(item.scheduledFor).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                     {' '}
                     {new Date(item.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                   <div>
-                    <span className={`text-xs px-2 py-0.5 rounded ${STATUS_COLORS[item.status] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded ${STATUS_COLORS[item.status] || 'bg-[var(--hx-surface-secondary)] text-[var(--hx-text-secondary)]'}`}>
                       {item.status}
                     </span>
                   </div>

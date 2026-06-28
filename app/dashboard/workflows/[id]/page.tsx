@@ -79,19 +79,19 @@ export default function WorkflowDetailPage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading workflow...</div>;
+    return <div className="p-8 text-center text-[var(--hx-text-secondary)]">Loading workflow...</div>;
   }
 
   if (!workflow) {
-    return <div className="p-8 text-center text-neutral-600">Workflow not found</div>;
+    return <div className="p-8 text-center text-[var(--hx-text-secondary)]">Workflow not found</div>;
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">{workflow.name}</h1>
-          <Link href="/dashboard/workflows" className="text-gray-600 hover:text-black">
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">{workflow.name}</h1>
+          <Link href="/dashboard/workflows" className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]">
             ← Back
           </Link>
         </div>
@@ -99,17 +99,17 @@ export default function WorkflowDetailPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg mb-6">
-            <p className="text-neutral-800">{error}</p>
+          <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg mb-6">
+            <p className="text-[var(--hx-text)]">{error}</p>
           </div>
         )}
 
-        <div className="bg-gray-50 rounded-lg p-6 mb-8">
+        <div className="bg-[var(--hx-surface-secondary)] rounded-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-black">Workflow Details</h2>
+            <h2 className="text-lg font-semibold text-[var(--hx-text)]">Workflow Details</h2>
             <button
               onClick={() => setEditing(!editing)}
-              className="px-4 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-900"
+              className="px-4 py-2 hx-btn-primary text-sm rounded-lg hover:bg-[var(--hx-brand-light)]"
             >
               {editing ? 'Cancel' : 'Edit'}
             </button>
@@ -118,74 +118,74 @@ export default function WorkflowDetailPage() {
           {editing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-black mb-1">
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">
                   Workflow Name
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-1">
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">
                   Description
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                   rows={4}
                 />
               </div>
 
               <button
                 onClick={handleSave}
-                className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900"
+                className="w-full px-4 py-2 hx-btn-primary rounded-lg hover:bg-[var(--hx-brand-light)]"
               >
                 Save Changes
               </button>
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-gray-600">{workflow.description || 'No description'}</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-[var(--hx-text-secondary)]">{workflow.description || 'No description'}</p>
+              <p className="text-sm text-[var(--hx-text-secondary)]">
                 Status: <span className="font-medium">{workflow.isActive ? 'Active' : 'Inactive'}</span>
               </p>
             </div>
           )}
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-white border border-[var(--hx-border)] rounded-lg p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-black">Steps ({workflow.steps.length})</h2>
+            <h2 className="text-lg font-semibold text-[var(--hx-text)]">Steps ({workflow.steps.length})</h2>
             <Link
               href={`/dashboard/workflows/${id}/builder`}
-              className="px-4 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-900"
+              className="px-4 py-2 hx-btn-primary text-sm rounded-lg hover:bg-[var(--hx-brand-light)]"
             >
               Add Step
             </Link>
           </div>
 
           {workflow.steps.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No steps yet</p>
+            <p className="text-[var(--hx-text-secondary)] text-center py-8">No steps yet</p>
           ) : (
             <div className="space-y-4">
               {workflow.steps.map((step, idx) => (
-                <div key={step.id} className="border border-gray-200 rounded p-4">
+                <div key={step.id} className="border border-[var(--hx-border)] rounded p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-medium text-black">Step {step.stepNumber}: {step.type}</p>
+                      <p className="font-medium text-[var(--hx-text)]">Step {step.stepNumber}: {step.type}</p>
                       {step.type === 'DELAY' && (
-                        <p className="text-sm text-gray-600 mt-1">{(step.delayMs || 0) / 1000}s delay</p>
+                        <p className="text-sm text-[var(--hx-text-secondary)] mt-1">{(step.delayMs || 0) / 1000}s delay</p>
                       )}
                       {step.type === 'MESSAGE' && (
-                        <p className="text-sm text-gray-600 mt-1">{step.content?.message || 'Message'}</p>
+                        <p className="text-sm text-[var(--hx-text-secondary)] mt-1">{step.content?.message || 'Message'}</p>
                       )}
                     </div>
-                    <div className="text-sm text-gray-600">#{idx + 1}</div>
+                    <div className="text-sm text-[var(--hx-text-secondary)]">#{idx + 1}</div>
                   </div>
                 </div>
               ))}

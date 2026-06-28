@@ -152,14 +152,14 @@ function AIPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="border-b border-gray-200 px-6 py-4">
+      <div className="border-b border-[var(--hx-border)] px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-black">AI Message Generator</h1>
+          <h1 className="text-2xl font-bold text-[var(--hx-text)]">AI Message Generator</h1>
           <Link
             href="/dashboard"
-            className="text-gray-600 hover:text-black"
+            className="text-[var(--hx-text-secondary)] hover:text-[var(--hx-text)]"
           >
             ← Back to Dashboard
           </Link>
@@ -169,7 +169,7 @@ function AIPage() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {aiConfigured === false && (
-          <div className="mb-6 rounded-md border border-neutral-300 bg-neutral-100 px-4 py-3 text-sm text-neutral-700">
+          <div className="mb-6 rounded-md border border-neutral-300 bg-[var(--hx-surface-secondary)] px-4 py-3 text-sm text-neutral-700">
             <strong>AI provider not configured.</strong> Messages are generated from
             built-in templates, not a live model. Set <code>OPENROUTER_API_KEY</code> to
             enable real AI generation.
@@ -178,31 +178,31 @@ function AIPage() {
         <div className="grid grid-cols-3 gap-8">
           {/* Form */}
           <div className="col-span-2">
-            <form onSubmit={handleGenerateMessage} className="space-y-6 bg-gray-50 p-6 rounded-lg">
+            <form onSubmit={handleGenerateMessage} className="space-y-6 bg-[var(--hx-surface-secondary)] p-6 rounded-lg">
               {error && (
-                <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-md">
-                  <p className="text-neutral-800">{error}</p>
+                <div className="p-4 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-md">
+                  <p className="text-[var(--hx-text)]">{error}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-black mb-1">Lead ID</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">Lead ID</label>
                 <input
                   type="text"
                   value={formData.leadId}
                   onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
                   placeholder="Paste lead ID here"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-md text-[var(--hx-text)] focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 />
-                <p className="text-xs text-gray-600 mt-1">Or go to a lead page and click &quot;Generate Message&quot;</p>
+                <p className="text-xs text-[var(--hx-text-secondary)] mt-1">Or go to a lead page and click &quot;Generate Message&quot;</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-1">Message Type</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">Message Type</label>
                 <select
                   value={formData.messageType}
                   onChange={(e) => setFormData({ ...formData, messageType: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-md text-[var(--hx-text)] focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 >
                   {messageTypes.map(type => (
                     <option key={type.value} value={type.value}>{type.label}</option>
@@ -212,11 +212,11 @@ function AIPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-1">Tone</label>
+                  <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">Tone</label>
                   <select
                     value={formData.tone}
                     onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-md text-[var(--hx-text)] focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                   >
                     {tones.map(tone => (
                       <option key={tone.value} value={tone.value}>{tone.label}</option>
@@ -225,11 +225,11 @@ function AIPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black mb-1">Length</label>
+                  <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">Length</label>
                   <select
                     value={formData.length}
                     onChange={(e) => setFormData({ ...formData, length: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-md text-[var(--hx-text)] focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                   >
                     {lengths.map(length => (
                       <option key={length.value} value={length.value}>{length.label}</option>
@@ -239,31 +239,31 @@ function AIPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-1">Product Name</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">Product Name</label>
                 <input
                   type="text"
                   value={formData.productName}
                   onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
                   placeholder="e.g., HaneXes"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-md text-[var(--hx-text)] focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-1">Value Proposition</label>
+                <label className="block text-sm font-medium text-[var(--hx-text)] mb-1">Value Proposition</label>
                 <textarea
                   value={formData.valueProposition}
                   onChange={(e) => setFormData({ ...formData, valueProposition: e.target.value })}
                   placeholder="What problem does your product solve?"
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-[var(--hx-border)] rounded-md text-[var(--hx-text)] focus:outline-none focus:ring-2 focus:ring-[var(--hx-brand)]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-4 py-2 bg-black text-white rounded-md font-medium hover:bg-gray-900 disabled:opacity-50 transition"
+                className="w-full px-4 py-2 hx-btn-primary rounded-md font-medium hover:bg-[var(--hx-brand-light)] disabled:opacity-50 transition"
               >
                 {loading ? 'Generating...' : 'Generate Message'}
               </button>
@@ -271,19 +271,19 @@ function AIPage() {
 
             {/* Result */}
             {result && (
-              <div className="mt-8 bg-neutral-50 border border-neutral-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-black mb-4">Generated Message</h3>
-                <div className="bg-white p-4 border border-gray-200 rounded mb-4 max-h-64 overflow-y-auto">
-                  <p className="text-black whitespace-pre-wrap">{result.message}</p>
+              <div className="mt-8 bg-[var(--hx-surface-secondary)] border border-[var(--hx-border)] rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-[var(--hx-text)] mb-4">Generated Message</h3>
+                <div className="bg-white p-4 border border-[var(--hx-border)] rounded mb-4 max-h-64 overflow-y-auto">
+                  <p className="text-[var(--hx-text)] whitespace-pre-wrap">{result.message}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => copyToClipboard(result.message)}
-                    className="flex-1 px-4 py-2 bg-black text-white rounded-md font-medium hover:bg-gray-900 transition"
+                    className="flex-1 px-4 py-2 hx-btn-primary rounded-md font-medium hover:bg-[var(--hx-brand-light)] transition"
                   >
                     Copy to Clipboard
                   </button>
-                  <p className="text-sm text-gray-600 self-center">
+                  <p className="text-sm text-[var(--hx-text-secondary)] self-center">
                     Tokens used: {result.tokensUsed}
                   </p>
                 </div>
@@ -295,20 +295,20 @@ function AIPage() {
           <div className="col-span-1">
             {/* Usage */}
             {usage && (
-              <div className="p-4 border border-gray-200 rounded-lg mb-6">
-                <h3 className="font-semibold text-black mb-4">Usage Limits</h3>
+              <div className="p-4 border border-[var(--hx-border)] rounded-lg mb-6">
+                <h3 className="font-semibold text-[var(--hx-text)] mb-4">Usage Limits</h3>
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="text-gray-600">Today&apos;s Generations</p>
-                    <p className="text-black font-medium">{usage.generationsToday} / 50</p>
+                    <p className="text-[var(--hx-text-secondary)]">Today&apos;s Generations</p>
+                    <p className="text-[var(--hx-text)] font-medium">{usage.generationsToday} / 50</p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Daily Tokens</p>
-                    <p className="text-black font-medium">{usage.tokensUsedToday} / 100,000</p>
+                    <p className="text-[var(--hx-text-secondary)]">Daily Tokens</p>
+                    <p className="text-[var(--hx-text)] font-medium">{usage.tokensUsedToday} / 100,000</p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Monthly Tokens</p>
-                    <p className="text-black font-medium">{usage.tokensUsedThisMonth} / 1,000,000</p>
+                    <p className="text-[var(--hx-text-secondary)]">Monthly Tokens</p>
+                    <p className="text-[var(--hx-text)] font-medium">{usage.tokensUsedThisMonth} / 1,000,000</p>
                   </div>
                 </div>
               </div>
@@ -316,18 +316,18 @@ function AIPage() {
 
             {/* History */}
             {history.length > 0 && (
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-semibold text-black mb-4">Recent Generations</h3>
+              <div className="p-4 border border-[var(--hx-border)] rounded-lg">
+                <h3 className="font-semibold text-[var(--hx-text)] mb-4">Recent Generations</h3>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {history.map((item) => (
-                    <div key={item.id} className="text-sm p-2 border border-gray-200 rounded">
-                      <p className="font-medium text-black">
+                    <div key={item.id} className="text-sm p-2 border border-[var(--hx-border)] rounded">
+                      <p className="font-medium text-[var(--hx-text)]">
                         {item.lead.firstName} {item.lead.lastName}
                       </p>
-                      <p className="text-gray-600 text-xs">
+                      <p className="text-[var(--hx-text-secondary)] text-xs">
                         {item.messageType.replace(/_/g, ' ')} ({item.length})
                       </p>
-                      <p className="text-gray-500 text-xs mt-1">
+                      <p className="text-[var(--hx-text-secondary)] text-xs mt-1">
                         {new Date(item.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -345,7 +345,7 @@ function AIPage() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading…</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-[var(--hx-text-secondary)]">Loading…</div>}>
       <AIPage />
     </Suspense>
   )
