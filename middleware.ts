@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import crypto from 'crypto';
 
 // Routes exempt from CSRF: webhooks (HMAC-authenticated), crons (Bearer token),
 // NextAuth (framework-managed), 2fa/login-verify (JWT token, not session),
@@ -21,6 +20,15 @@ function isCsrfExempt(pathname: string): boolean {
   return CSRF_EXEMPT_PREFIXES.some(p => pathname.startsWith(p));
 }
 
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
   const method = request.method.toUpperCase();
@@ -36,9 +44,7 @@ export function middleware(request: NextRequest) {
     const cookieToken = request.cookies.get('x-csrf-token')?.value;
 
     if (headerToken && cookieToken && headerToken.length === 64 && cookieToken.length === 64) {
-      const headerBuf = Buffer.from(headerToken);
-      const cookieBuf = Buffer.from(cookieToken);
-      if (!crypto.timingSafeEqual(headerBuf, cookieBuf)) {
+      if (!timingSafeEqual(headerToken, cookieToken)) {
         return NextResponse.json({ success: false, error: 'CSRF token validation failed' }, { status: 403 });
       }
     } else if (headerToken || cookieToken) {
